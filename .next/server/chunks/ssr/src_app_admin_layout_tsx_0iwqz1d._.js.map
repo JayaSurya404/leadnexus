@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../../src/app/admin/layout.tsx"],"sourcesContent":["import type { ReactNode } from \"react\";\n\nexport default function SectionLayout({ children }: Readonly<{ children: ReactNode }>) {\n  return children;\n}\r\n"],"names":["SectionLayout","children"],"mappings":"wDAEe,SAASA,AAAc,UAAEC,CAAQ,CAAqC,EACnF,OAAOA,CACT"}

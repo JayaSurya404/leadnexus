@@ -1,0 +1,25 @@
+1:"$Sreact.fragment"
+2:I[97367,["/_next/static/chunks/3fntmmi971322.js"],"OutletBoundary"]
+3:"$Sreact.suspense"
+7:I[97367,["/_next/static/chunks/3fntmmi971322.js"],"ViewportBoundary"]
+8:I[97367,["/_next/static/chunks/3fntmmi971322.js"],"MetadataBoundary"]
+9:I[27201,["/_next/static/chunks/3fntmmi971322.js"],"IconMark"]
+b:I[39756,["/_next/static/chunks/3fntmmi971322.js"],"default"]
+c:I[37457,["/_next/static/chunks/3fntmmi971322.js"],"default"]
+f:I[39756,["/_next/static/chunks/3fntmmi971322.js"],"LoadingBoundaryProvider"]
+10:I[46798,["/_next/static/chunks/3m_c212r_5l_9.js","/_next/static/chunks/35gobylikdlq3.js"],"TooltipProvider"]
+11:I[58298,["/_next/static/chunks/3m_c212r_5l_9.js","/_next/static/chunks/35gobylikdlq3.js","/_next/static/chunks/0tybd_dgnmk99.js"],"default"]
+:HL["/_next/static/chunks/3k34f0h-rlj1g.css","style"]
+6:X
+e:X
+e:C
+0:{"buildId":"ix8911oTUzxDN2GtR8E7n","data":[{"rsc":["$","$1","c",{"children":[["$","main",null,{"children":["$","h1",null,{"children":"onboarding"}]}],null,["$","$L2",null,{"children":["$","$3",null,{"name":"Next.MetadataOutlet","children":"$@4"}]}]]}],"isPartial":"$@5","staleTime":"$6","varyParams":null},{"rsc":["$","$1","h",{"children":[null,["$","$L7",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L8",null,{"children":["$","$3",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"LeadNexus"}],["$","meta","1",{"name":"description","content":"LeadNexus application foundation"}],["$","link","2",{"rel":"manifest","href":"/manifest.webmanifest"}],["$","meta","3",{"property":"og:title","content":"LeadNexus"}],["$","meta","4",{"property":"og:description","content":"LeadNexus application foundation"}],["$","meta","5",{"property":"og:image","content":"http://localhost:3000/opengraph-image?997124eefda0b64d"}],["$","meta","6",{"property":"og:image:type","content":"image/png"}],["$","meta","7",{"property":"og:image:width","content":"1200"}],["$","meta","8",{"property":"og:image:height","content":"630"}],["$","meta","9",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","10",{"name":"twitter:title","content":"LeadNexus"}],["$","meta","11",{"name":"twitter:description","content":"LeadNexus application foundation"}],["$","meta","12",{"name":"twitter:image","content":"http://localhost:3000/opengraph-image?997124eefda0b64d"}],["$","meta","13",{"name":"twitter:image:type","content":"image/png"}],["$","meta","14",{"name":"twitter:image:width","content":"1200"}],["$","meta","15",{"name":"twitter:image:height","content":"630"}],["$","link","16",{"rel":"icon","href":"/favicon.ico?favicon.2vob68tjqpejf.ico","sizes":"256x256","type":"image/x-icon"}],["$","$L9","17",{}]]}]}]}],null]}],"isPartial":"$@a","staleTime":"$6","varyParams":null},{"rsc":["$","$1","c",{"children":[null,["$","$Lb",null,{"parallelRouterKey":"children","template":["$","$Lc",null,{}]}]]}],"isPartial":"$@d","staleTime":"$6","varyParams":"$e"},{"rsc":["$","$Lf",null,{"loading":[["$","p","l",{"children":"Loading..."}],[],null],"children":["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/chunks/3k34f0h-rlj1g.css","precedence":"next"}],["$","script","script-0",{"src":"/_next/static/chunks/3m_c212r_5l_9.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/35gobylikdlq3.js","async":true}]],["$","html",null,{"lang":"en","children":["$","body",null,{"className":"antialiased","children":["$","$L10",null,{"children":["$","$Lb",null,{"parallelRouterKey":"children","error":"$11","errorStyles":[],"errorScripts":[["$","script","script-0",{"src":"/_next/static/chunks/0tybd_dgnmk99.js","async":true}]],"template":["$","$Lc",null,{}],"notFound":[["$","main",null,{"children":["$","h1",null,{"children":"Not found"}]}],[]]}]}]}]}]]}]}],"isPartial":"$@12","staleTime":"$6","varyParams":null}],"isUpgradeableISRFallback":false,"a":"$@13","rootVaryParams":null,"needsRuntimeRequest":"$@14"}
+4:null
+6:300
+14:true
+6:C
+13:0
+a:"$undefined"
+d:"$undefined"
+12:"$undefined"
+5:"$undefined"

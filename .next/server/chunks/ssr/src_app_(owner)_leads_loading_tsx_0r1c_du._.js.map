@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../../src/app/%28owner%29/leads/loading.tsx"],"sourcesContent":["export default function Loading() {\n  return <p>Loading...</p>;\n}\r\n"],"names":["Loading"],"mappings":"wEAAe,SAASA,EACtB,MAAO,CAAA,EAAA,EAAA,GAAA,EAAC,IAAA,UAAE,cACZ"}

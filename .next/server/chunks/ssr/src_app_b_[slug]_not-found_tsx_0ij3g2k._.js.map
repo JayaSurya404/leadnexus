@@ -1,0 +1,1 @@
+{"version":3,"sources":["../../../../src/app/b/%5Bslug%5D/not-found.tsx"],"sourcesContent":["export default function BusinessNotFound() { return <main><h1>Business not found</h1></main>; }\r\n"],"names":["BusinessNotFound"],"mappings":"wEAAe,SAASA,EAAqB,MAAO,CAAA,EAAA,EAAA,GAAA,EAAC,OAAA,UAAK,CAAA,EAAA,EAAA,GAAA,EAAC,KAAA,UAAG,wBAAgC"}

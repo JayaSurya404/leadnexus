@@ -1,0 +1,2 @@
+﻿-- LeadNexus migration placeholder.
+

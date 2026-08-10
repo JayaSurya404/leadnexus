@@ -1,5 +1,23 @@
 ﻿"use server";
 
-export async function authLogout(): Promise<never> {
-  throw new Error("Not implemented");
+import { redirect } from "next/navigation";
+
+import { createClient } from "@/lib/supabase/server";
+
+export async function logoutAction() {
+  const supabase = await createClient();
+
+  const { error } =
+    await supabase.auth.signOut({
+      scope: "local",
+    });
+
+  if (error) {
+    console.error(
+      "LeadNexus logout error:",
+      error.message,
+    );
+  }
+
+  redirect("/login");
 }

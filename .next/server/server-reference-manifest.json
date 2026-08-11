@@ -52,7 +52,7 @@
           "codeHash": null
         },
         "app/(owner)/business/page": {
-          "moduleId": 26238,
+          "moduleId": 14095,
           "async": false,
           "codeHash": null
         },
@@ -77,7 +77,7 @@
           "codeHash": null
         },
         "app/(owner)/products/page": {
-          "moduleId": 72508,
+          "moduleId": 83753,
           "async": false,
           "codeHash": null
         },
@@ -99,6 +99,138 @@
       },
       "filename": "src/actions/auth/logout.ts",
       "exportedName": "logoutAction"
+    },
+    "409611379b348cc3c25fc134c51d9eea1039d4a605": {
+      "workers": {
+        "app/(owner)/business/page": {
+          "moduleId": 14095,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/business/update-business.ts",
+      "exportedName": "updateBusinessAction"
+    },
+    "40384d427bbb4fd5044678c0871a894911a0eeafe5": {
+      "workers": {
+        "app/(owner)/business/page": {
+          "moduleId": 14095,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/business/update-hours.ts",
+      "exportedName": "updateBusinessHoursAction"
+    },
+    "40a9164624ab31f9baac513e5261ac168c01a28144": {
+      "workers": {
+        "app/(owner)/business/page": {
+          "moduleId": 14095,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/business/update-social-links.ts",
+      "exportedName": "updateSocialLinksAction"
+    },
+    "4090a949eac9b2bab6e40ef917266900f0e5b2fbb7": {
+      "workers": {
+        "app/(owner)/business/page": {
+          "moduleId": 14095,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/business/update-public-page.ts",
+      "exportedName": "updatePublicPageAction"
+    },
+    "40aac4d6cd31dec57353a9e852721999322926a646": {
+      "workers": {
+        "app/(owner)/business/page": {
+          "moduleId": 14095,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/business/update-contact-templates.ts",
+      "exportedName": "updateContactTemplatesAction"
+    },
+    "40eba48a3de821e6ff177fa0df2451ede1aaa530d0": {
+      "workers": {
+        "app/(owner)/business/page": {
+          "moduleId": 14095,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/business/update-brand.ts",
+      "exportedName": "finalizeBrandUploadAction"
+    },
+    "407e064f1dabe257ca4be8436ea8339db8e750e820": {
+      "workers": {
+        "app/(owner)/business/page": {
+          "moduleId": 14095,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/business/update-brand.ts",
+      "exportedName": "removeBrandImageAction"
+    },
+    "40c57ec8fbf19fe949c9f6d45685ce7570dadc9a9d": {
+      "workers": {
+        "app/(owner)/products/page": {
+          "moduleId": 83753,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/products/create-product.ts",
+      "exportedName": "createProductAction"
+    },
+    "4082cefd6ba99b72b9e4491855f1945f4fdea5f175": {
+      "workers": {
+        "app/(owner)/products/page": {
+          "moduleId": 83753,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/products/delete-product.ts",
+      "exportedName": "deleteProductAction"
+    },
+    "407030ff5f7275aad7692e11f583dbbbbc8739421c": {
+      "workers": {
+        "app/(owner)/products/page": {
+          "moduleId": 83753,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/products/update-product.ts",
+      "exportedName": "removeProductImageAction"
+    },
+    "40c03c826b2585d5c776fd2ded3754601c6e8061c0": {
+      "workers": {
+        "app/(owner)/products/page": {
+          "moduleId": 83753,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/products/update-product.ts",
+      "exportedName": "finalizeProductImageAction"
+    },
+    "6094f23375427376ec145a02afd78404f519f95083": {
+      "workers": {
+        "app/(owner)/products/page": {
+          "moduleId": 83753,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/products/update-product.ts",
+      "exportedName": "updateProductAction"
     },
     "409ab84d6c0bdb7b786c6ca286486c1e03e841b385": {
       "workers": {

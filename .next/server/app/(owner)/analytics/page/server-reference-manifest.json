@@ -1,4 +1,16 @@
 {
-  "node": {},
+  "node": {
+    "0095ce79d5fbd3a8cbaa1b96d1084666be4eff3da4": {
+      "workers": {
+        "app/(owner)/analytics/page": {
+          "moduleId": 98219,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "logoutAction",
+      "filename": "src/actions/auth/logout.ts"
+    }
+  },
   "edge": {}
 }

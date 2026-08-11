@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///D:/leadnexus/src/app/error.tsx"],"sourcesContent":["\"use client\";\n\nexport default function ErrorPage({ reset }: { error: Error & { digest?: string }; reset: () => void }) {\n  return <main><h1>Something went wrong</h1><button onClick={reset}>Try again</button></main>;\n}\r\n"],"names":["ErrorPage","reset","onClick"],"mappings":";;;;;AAAA;;AAEe,SAASA,UAAU,EAAEC,KAAK,EAA6D;IACpG,qBAAO,6LAAC;;0BAAK,6LAAC;0BAAG;;;;;;0BAAyB,6LAAC;gBAAOC,SAASD;0BAAO;;;;;;;;;;;;AACpE;KAFwBD"}}]
+}

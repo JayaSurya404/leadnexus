@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///D:/leadnexus/src/app/global-error.tsx"],"sourcesContent":["\"use client\";\n\nexport default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {\n  return <html lang=\"en\"><body><main><h1>Application error</h1><button onClick={reset}>Try again</button></main></body></html>;\n}\r\n"],"names":["GlobalError","reset","lang","onClick"],"mappings":";;;;;AAAA;;AAEe,SAASA,YAAY,EAAEC,KAAK,EAA6D;IACtG,qBAAO,8OAAC;QAAKC,MAAK;kBAAK,cAAA,8OAAC;sBAAK,cAAA,8OAAC;;kCAAK,8OAAC;kCAAG;;;;;;kCAAsB,8OAAC;wBAAOC,SAASF;kCAAO;;;;;;;;;;;;;;;;;;;;;;AACvF"}}]
+}

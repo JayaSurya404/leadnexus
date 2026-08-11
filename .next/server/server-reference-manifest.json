@@ -43,6 +43,73 @@
       },
       "filename": "src/actions/auth/signup.ts",
       "exportedName": "signupAction"
+    },
+    "0095ce79d5fbd3a8cbaa1b96d1084666be4eff3da4": {
+      "workers": {
+        "app/(owner)/analytics/page": {
+          "moduleId": 98219,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(owner)/business/page": {
+          "moduleId": 26238,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(owner)/dashboard/page": {
+          "moduleId": 3395,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(owner)/leads/[leadId]/page": {
+          "moduleId": 69469,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(owner)/leads/page": {
+          "moduleId": 77936,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(owner)/links/page": {
+          "moduleId": 47566,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(owner)/products/page": {
+          "moduleId": 72508,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(owner)/recovered-leads/page": {
+          "moduleId": 26767,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(owner)/seo/page": {
+          "moduleId": 54719,
+          "async": false,
+          "codeHash": null
+        },
+        "app/(owner)/settings/page": {
+          "moduleId": 79549,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/auth/logout.ts",
+      "exportedName": "logoutAction"
+    },
+    "409ab84d6c0bdb7b786c6ca286486c1e03e841b385": {
+      "workers": {
+        "app/onboarding/page": {
+          "moduleId": 64974,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "src/actions/onboarding/complete-onboarding.ts",
+      "exportedName": "completeOnboardingAction"
     }
   },
   "edge": {},

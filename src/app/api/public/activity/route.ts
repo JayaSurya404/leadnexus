@@ -159,7 +159,7 @@ export async function POST(
       business_id:
         businessId,
 
-      visitor_session_id:
+      session_id:
         sessionId,
 
       lead_id:

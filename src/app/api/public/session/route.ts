@@ -355,7 +355,7 @@ export async function POST(
           business_id:
             businessId,
 
-          visitor_session_id:
+          session_id:
             existingSession.id,
 
           event_type:
@@ -484,7 +484,7 @@ export async function POST(
       business_id:
         businessId,
 
-      visitor_session_id:
+      session_id:
         session.id,
 
       event_type:

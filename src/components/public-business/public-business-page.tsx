@@ -1,5 +1,9 @@
 "use client";
 
+import type {
+  ReactNode,
+} from "react";
+
 import {
   useEffect,
   useState,
@@ -55,8 +59,7 @@ const dayNames = [
 ] as const;
 
 type PublicBusinessPageProps = {
-  data:
-    PublicBusinessPageData;
+  data: PublicBusinessPageData;
 };
 
 export function PublicBusinessPage({
@@ -102,181 +105,163 @@ export function PublicBusinessPage({
       null,
     );
 
-  useEffect(
-    () => {
-      let active =
-        true;
+  useEffect(() => {
+    let active =
+      true;
 
-      async function initialize() {
-        let source:
-          | string
-          | null = null;
+    async function initialize() {
+      let source:
+        | string
+        | null = null;
 
-        const params =
-          new URLSearchParams(
-            window.location.search,
-          );
+      const params =
+        new URLSearchParams(
+          window.location.search,
+        );
 
-        source =
-          params.get(
-            "utm_source",
-          ) ??
-          params.get(
-            "source",
-          );
+      source =
+        params.get(
+          "utm_source",
+        ) ??
+        params.get(
+          "source",
+        );
 
-        if (
-          !source &&
-          document.referrer
-        ) {
-          try {
-            source =
-              new URL(
-                document.referrer,
-              ).hostname;
-          } catch {
-            source =
-              null;
-          }
-        }
-
-        source =
-          source ??
-          "Direct";
-
+      if (
+        !source &&
+        document.referrer
+      ) {
         try {
-          const id =
-            await ensurePublicSession(
-              {
-                businessId:
-                  data.business.id,
-
-                source,
-
-                landingPath:
-                  `${window.location.pathname}${window.location.search}`,
-              },
-            );
-
-          if (!active) {
-            return;
-          }
-
-          setSessionId(
-            id,
-          );
-
-          void trackPublicActivity(
-            {
-              businessId:
-                data.business.id,
-
-              sessionId:
-                id,
-
-              eventType:
-                "PAGE_VIEW",
-
-              pagePath:
-                window.location.pathname,
-            },
-          ).catch(
-            () => undefined,
-          );
-
-          void trackPublicActivity(
-            {
-              businessId:
-                data.business.id,
-
-              sessionId:
-                id,
-
-              eventType:
-                "LEAD_FORM_VIEW",
-
-              pagePath:
-                window.location.pathname,
-            },
-          ).catch(
-            () => undefined,
-          );
-        } catch (
-          error
-        ) {
-          console.error(
-            "LeadNexus visitor session:",
-            error,
-          );
+          source =
+            new URL(
+              document.referrer,
+            ).hostname;
+        } catch {
+          source =
+            null;
         }
       }
 
-      void initialize();
+      source =
+        source ??
+        "Direct";
 
-      return () => {
-        active =
-          false;
-      };
-    },
-    [
-      data.business.id,
-    ],
-  );
-
-  useEffect(
-    () => {
-      function onPageHide() {
-        if (!sessionId) {
-          return;
-        }
-
-        void trackPublicActivity(
-          {
+      try {
+        const id =
+          await ensurePublicSession({
             businessId:
               data.business.id,
 
-            sessionId,
+            source,
 
-            leadId,
+            landingPath:
+              `${window.location.pathname}${window.location.search}`,
+          });
 
-            productId:
-              selectedProductId,
+        if (!active) {
+          return;
+        }
 
-            eventType:
-              "PAGE_EXIT",
+        setSessionId(id);
 
-            pagePath:
-              window.location.pathname,
+        void trackPublicActivity({
+          businessId:
+            data.business.id,
 
-            keepalive:
-              true,
-          },
-        ).catch(
+          sessionId:
+            id,
+
+          eventType:
+            "PAGE_VIEW",
+
+          pagePath:
+            window.location.pathname,
+        }).catch(
           () => undefined,
         );
+
+        void trackPublicActivity({
+          businessId:
+            data.business.id,
+
+          sessionId:
+            id,
+
+          eventType:
+            "LEAD_FORM_VIEW",
+
+          pagePath:
+            window.location.pathname,
+        }).catch(
+          () => undefined,
+        );
+      } catch (error) {
+        console.error(
+          "LeadNexus visitor session:",
+          error,
+        );
+      }
+    }
+
+    void initialize();
+
+    return () => {
+      active =
+        false;
+    };
+  }, [
+    data.business.id,
+  ]);
+
+  useEffect(() => {
+    function onPageHide() {
+      if (!sessionId) {
+        return;
       }
 
-      window.addEventListener(
+      void trackPublicActivity({
+        businessId:
+          data.business.id,
+
+        sessionId,
+
+        leadId,
+
+        productId:
+          selectedProductId,
+
+        eventType:
+          "PAGE_EXIT",
+
+        pagePath:
+          window.location.pathname,
+
+        keepalive:
+          true,
+      }).catch(
+        () => undefined,
+      );
+    }
+
+    window.addEventListener(
+      "pagehide",
+      onPageHide,
+    );
+
+    return () => {
+      window.removeEventListener(
         "pagehide",
         onPageHide,
       );
+    };
+  }, [
+    data.business.id,
+    leadId,
+    selectedProductId,
+    sessionId,
+  ]);
 
-      return () => {
-        window.removeEventListener(
-          "pagehide",
-          onPageHide,
-        );
-      };
-    },
-    [
-      data.business.id,
-      leadId,
-      selectedProductId,
-      sessionId,
-    ],
-  );
-
-  async function selectProduct(
+  function selectProduct(
     productId: string,
   ) {
     setSelectedProductId(
@@ -288,29 +273,30 @@ export function PublicBusinessPage({
         "lead-capture",
       )
       ?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
+        behavior:
+          "smooth",
+
+        block:
+          "center",
       });
 
     if (sessionId) {
-      void trackPublicActivity(
-        {
-          businessId:
-            data.business.id,
+      void trackPublicActivity({
+        businessId:
+          data.business.id,
 
-          sessionId,
+        sessionId,
 
-          leadId,
+        leadId,
 
-          productId,
+        productId,
 
-          eventType:
-            "PRODUCT_ENGAGED",
+        eventType:
+          "PRODUCT_ENGAGED",
 
-          pagePath:
-            window.location.pathname,
-        },
-      ).catch(
+        pagePath:
+          window.location.pathname,
+      }).catch(
         () => undefined,
       );
     }
@@ -350,21 +336,19 @@ export function PublicBusinessPage({
 
     try {
       const result =
-        await createPublicContact(
-          {
-            businessId:
-              data.business.id,
+        await createPublicContact({
+          businessId:
+            data.business.id,
 
-            sessionId,
+          sessionId,
 
-            leadId,
+          leadId,
 
-            productId:
-              selectedProductId,
+          productId:
+            selectedProductId,
 
-            channel,
-          },
-        );
+          channel,
+        });
 
       if (
         result.url.startsWith(
@@ -380,8 +364,10 @@ export function PublicBusinessPage({
           "noopener,noreferrer",
         );
       } else {
-        window.location.href =
-          result.url;
+        window.open(
+          result.url,
+          "_self",
+        );
       }
     } catch (caught) {
       setContactError(
@@ -408,8 +394,7 @@ export function PublicBusinessPage({
 
   return (
     <main className="min-h-screen bg-muted/20">
-      {data.business
-        .coverUrl ? (
+      {data.business.coverUrl ? (
         <div
           className="h-52 w-full bg-cover bg-center sm:h-72"
           style={{
@@ -427,8 +412,7 @@ export function PublicBusinessPage({
             <div
               className="flex size-24 shrink-0 items-center justify-center rounded-2xl border bg-background bg-cover bg-center shadow-sm"
               style={
-                data.business
-                  .logoUrl
+                data.business.logoUrl
                   ? {
                       backgroundImage:
                         `url("${data.business.logoUrl}")`,
@@ -436,54 +420,44 @@ export function PublicBusinessPage({
                   : undefined
               }
             >
-              {!data.business
-                .logoUrl ? (
+              {!data.business.logoUrl ? (
                 <BriefcaseBusiness className="size-9 text-muted-foreground" />
               ) : null}
             </div>
 
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap gap-2">
-                {data.business
-                  .category ? (
+                {data.business.category ? (
                   <Badge variant="secondary">
                     {
-                      data.business
-                        .category
+                      data.business.category
                     }
                   </Badge>
                 ) : null}
 
-                {data.business
-                  .businessType ? (
+                {data.business.businessType ? (
                   <Badge variant="outline">
                     {
-                      data.business
-                        .businessType
+                      data.business.businessType
                     }
                   </Badge>
                 ) : null}
               </div>
 
               <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-                {data.settings
-                  .headline ||
-                  data.business
-                    .name}
+                {data.settings.headline ||
+                  data.business.name}
               </h1>
 
-              {data.settings
-                .subheadline ? (
+              {data.settings.subheadline ? (
                 <p className="mt-3 max-w-3xl text-lg leading-7 text-muted-foreground">
                   {
-                    data.settings
-                      .subheadline
+                    data.settings.subheadline
                   }
                 </p>
               ) : null}
 
-              {data.settings
-                .showLocation &&
+              {data.settings.showLocation &&
               location ? (
                 <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="size-4" />
@@ -496,26 +470,20 @@ export function PublicBusinessPage({
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
           <div className="space-y-10">
-            {(data.settings
-              .about ||
-              data.business
-                .description) ? (
+            {data.settings.about ||
+            data.business.description ? (
               <section className="rounded-2xl border bg-background p-6">
                 <h2 className="text-xl font-semibold">
                   About
                 </h2>
 
                 <p className="mt-4 whitespace-pre-line leading-7 text-muted-foreground">
-                  {data.settings
-                    .about ||
-                    data.business
-                      .description}
+                  {data.settings.about ||
+                    data.business.description}
                 </p>
 
-                {data.settings
-                  .showLocation &&
-                data.business
-                  .serviceArea ? (
+                {data.settings.showLocation &&
+                data.business.serviceArea ? (
                   <div className="mt-5 flex items-start gap-3 rounded-xl bg-muted/50 p-4">
                     <MapPin className="mt-0.5 size-4 shrink-0" />
 
@@ -526,8 +494,7 @@ export function PublicBusinessPage({
 
                       <p className="mt-1 text-sm text-muted-foreground">
                         {
-                          data.business
-                            .serviceArea
+                          data.business.serviceArea
                         }
                       </p>
                     </div>
@@ -536,8 +503,7 @@ export function PublicBusinessPage({
               </section>
             ) : null}
 
-            {data.settings
-              .showProducts &&
+            {data.settings.showProducts &&
             data.products.length >
               0 ? (
               <section>
@@ -553,9 +519,7 @@ export function PublicBusinessPage({
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   {data.products.map(
-                    (
-                      product,
-                    ) => {
+                    (product) => {
                       const selected =
                         selectedProductId ===
                         product.id;
@@ -567,6 +531,7 @@ export function PublicBusinessPage({
                           }
                           className={[
                             "overflow-hidden rounded-2xl border bg-background transition",
+
                             selected
                               ? "border-primary ring-2 ring-primary/10"
                               : "",
@@ -637,11 +602,11 @@ export function PublicBusinessPage({
                                   : "outline"
                               }
                               className="mt-5 w-full"
-                              onClick={() => {
-                                void selectProduct(
+                              onClick={() =>
+                                selectProduct(
                                   product.id,
-                                );
-                              }}
+                                )
+                              }
                             >
                               {selected
                                 ? "Selected"
@@ -656,8 +621,7 @@ export function PublicBusinessPage({
               </section>
             ) : null}
 
-            {data.settings
-              .showBusinessHours &&
+            {data.settings.showBusinessHours &&
             data.hours.length >
               0 ? (
               <section className="rounded-2xl border bg-background p-6">
@@ -704,8 +668,7 @@ export function PublicBusinessPage({
               </section>
             ) : null}
 
-            {data.settings
-              .showSocialLinks &&
+            {data.settings.showSocialLinks &&
             data.socials.length >
               0 ? (
               <section className="rounded-2xl border bg-background p-6">
@@ -729,22 +692,20 @@ export function PublicBusinessPage({
                           social.platform,
                         );
 
-                      if (
-                        supported
-                      ) {
+                      if (supported) {
                         return (
                           <Button
                             key={`${social.platform}-${social.url}`}
                             type="button"
                             variant="outline"
-                            onClick={() => {
+                            onClick={() =>
                               void contact(
                                 social.platform as
                                   | "INSTAGRAM"
                                   | "FACEBOOK"
                                   | "LINKEDIN",
-                              );
-                            }}
+                              )
+                            }
                           >
                             <Link2 className="size-4" />
                             {
@@ -768,6 +729,7 @@ export function PublicBusinessPage({
                             rel="noreferrer"
                           >
                             <ExternalLink className="size-4" />
+
                             {
                               social.label
                             }
@@ -821,8 +783,7 @@ export function PublicBusinessPage({
               <div>
                 <h2 className="text-lg font-semibold">
                   {
-                    data.settings
-                      .primaryCtaText
+                    data.settings.primaryCtaText
                   }
                 </h2>
 
@@ -835,10 +796,8 @@ export function PublicBusinessPage({
               </div>
 
               <div className="mt-5 grid gap-3">
-                {data.settings
-                  .showWhatsapp &&
-                data.contactAvailability
-                  .whatsapp ? (
+                {data.settings.showWhatsapp &&
+                data.contactAvailability.whatsapp ? (
                   <ContactButton
                     label="WhatsApp"
                     icon={
@@ -848,18 +807,16 @@ export function PublicBusinessPage({
                       contactLoading ===
                       "WHATSAPP"
                     }
-                    onClick={() => {
+                    onClick={() =>
                       void contact(
                         "WHATSAPP",
-                      );
-                    }}
+                      )
+                    }
                   />
                 ) : null}
 
-                {data.settings
-                  .showPhone &&
-                data.contactAvailability
-                  .phone ? (
+                {data.settings.showPhone &&
+                data.contactAvailability.phone ? (
                   <ContactButton
                     label="Call business"
                     icon={
@@ -869,18 +826,16 @@ export function PublicBusinessPage({
                       contactLoading ===
                       "PHONE"
                     }
-                    onClick={() => {
+                    onClick={() =>
                       void contact(
                         "PHONE",
-                      );
-                    }}
+                      )
+                    }
                   />
                 ) : null}
 
-                {data.settings
-                  .showEmail &&
-                data.contactAvailability
-                  .email ? (
+                {data.settings.showEmail &&
+                data.contactAvailability.email ? (
                   <ContactButton
                     label="Email business"
                     icon={
@@ -890,16 +845,15 @@ export function PublicBusinessPage({
                       contactLoading ===
                       "EMAIL"
                     }
-                    onClick={() => {
+                    onClick={() =>
                       void contact(
                         "EMAIL",
-                      );
-                    }}
+                      )
+                    }
                   />
                 ) : null}
 
-                {data.contactAvailability
-                  .website ? (
+                {data.contactAvailability.website ? (
                   <ContactButton
                     label="Visit website"
                     icon={
@@ -909,11 +863,11 @@ export function PublicBusinessPage({
                       contactLoading ===
                       "WEBSITE"
                     }
-                    onClick={() => {
+                    onClick={() =>
                       void contact(
                         "WEBSITE",
-                      );
-                    }}
+                      )
+                    }
                   />
                 ) : null}
               </div>
@@ -943,7 +897,7 @@ function ContactButton({
   onClick,
 }: {
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   loading: boolean;
   onClick: () => void;
 }) {

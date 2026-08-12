@@ -70,20 +70,17 @@ async function postJson<T>(
         };
 
   if (!response.ok) {
-    throw new Error(
-      "error" in
-        (result as object) &&
-      typeof (
+    const errorValue =
+      (
         result as {
           error?: unknown;
         }
-      ).error ===
+      ).error;
+
+    throw new Error(
+      typeof errorValue ===
         "string"
-        ? (
-            result as {
-              error: string;
-            }
-          ).error
+        ? errorValue
         : "Request failed.",
     );
   }
@@ -112,13 +109,14 @@ export async function ensurePublicSession({
       storageKey,
     );
 
-  if (stored) {
-    return stored;
-  }
+  const promiseKey =
+    stored
+      ? `${businessId}:${stored}`
+      : businessId;
 
   const existingPromise =
     sessionPromises.get(
-      businessId,
+      promiseKey,
     );
 
   if (existingPromise) {
@@ -133,10 +131,17 @@ export async function ensurePublicSession({
       {
         businessId,
 
+        existingSessionId:
+          stored,
+
         anonymousId:
           getAnonymousId(),
 
         source,
+
+        referrer:
+          document.referrer ||
+          null,
 
         landingPath,
       },
@@ -152,7 +157,7 @@ export async function ensurePublicSession({
     );
 
   sessionPromises.set(
-    businessId,
+    promiseKey,
     promise,
   );
 
@@ -160,7 +165,7 @@ export async function ensurePublicSession({
     return await promise;
   } finally {
     sessionPromises.delete(
-      businessId,
+      promiseKey,
     );
   }
 }

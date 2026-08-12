@@ -1,4 +1,6 @@
-import { z } from "zod";
+import {
+  z,
+} from "zod";
 
 const uuidSchema =
   z.string().uuid();
@@ -23,6 +25,9 @@ export const publicSessionSchema =
     businessId:
       uuidSchema,
 
+    existingSessionId:
+      optionalUuidSchema,
+
     anonymousId: z
       .string()
       .trim()
@@ -36,11 +41,18 @@ export const publicSessionSchema =
       .nullable()
       .optional(),
 
+    referrer: z
+      .string()
+      .trim()
+      .max(2000)
+      .nullable()
+      .optional(),
+
     landingPath: z
       .string()
       .trim()
       .min(1)
-      .max(1000),
+      .max(2000),
   });
 
 export const publicActivitySchema =

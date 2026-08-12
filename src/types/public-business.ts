@@ -32,19 +32,12 @@ export type PublicProduct = {
   name: string;
   slug: string;
 
-  description:
-    | string
-    | null;
-
-  priceText:
-    | string
-    | null;
+  description: string | null;
+  priceText: string | null;
 
   featured: boolean;
 
-  imageUrl:
-    | string
-    | null;
+  imageUrl: string | null;
 };
 
 export type PublicBusinessPageData = {
@@ -53,55 +46,23 @@ export type PublicBusinessPageData = {
     name: string;
     slug: string;
 
-    category:
-      | string
-      | null;
+    category: string | null;
+    businessType: string | null;
+    description: string | null;
 
-    businessType:
-      | string
-      | null;
+    city: string | null;
+    state: string | null;
+    country: string | null;
+    serviceArea: string | null;
 
-    description:
-      | string
-      | null;
-
-    city:
-      | string
-      | null;
-
-    state:
-      | string
-      | null;
-
-    country:
-      | string
-      | null;
-
-    serviceArea:
-      | string
-      | null;
-
-    logoUrl:
-      | string
-      | null;
-
-    coverUrl:
-      | string
-      | null;
+    logoUrl: string | null;
+    coverUrl: string | null;
   };
 
   settings: {
-    headline:
-      | string
-      | null;
-
-    subheadline:
-      | string
-      | null;
-
-    about:
-      | string
-      | null;
+    headline: string | null;
+    subheadline: string | null;
+    about: string | null;
 
     primaryCtaText: string;
 
@@ -114,20 +75,11 @@ export type PublicBusinessPageData = {
     showWhatsapp: boolean;
   };
 
-  products;
-    showPhone: boolean;
-    showEmail: boolean;
-    showWhatsapp: boolean;
-  };
+  products: PublicProduct[];
 
-  products:
-    PublicProduct[];
+  socials: PublicSocialLink[];
 
-  socials:
-    PublicSocialLink[];
-
-  hours:
-    PublicBusinessHour[];
+  hours: PublicBusinessHour[];
 
   contactAvailability: {
     whatsapp: boolean;

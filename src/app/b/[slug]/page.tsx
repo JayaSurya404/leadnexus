@@ -11,13 +11,17 @@ import {
 } from "@/components/public-business/public-business-page";
 
 import {
+  getPublicSeoSettings,
+} from "@/features/seo/queries";
+
+import {
   getPublicBusinessPage,
 } from "@/features/tracking/public-business";
 
 export const dynamic =
   "force-dynamic";
 
-type PublicPageProps = {
+type PublicBusinessRouteProps = {
   params: Promise<{
     slug: string;
   }>;
@@ -25,8 +29,10 @@ type PublicPageProps = {
 
 export async function generateMetadata({
   params,
-}: PublicPageProps): Promise<Metadata> {
-  const { slug } =
+}: PublicBusinessRouteProps): Promise<Metadata> {
+  const {
+    slug,
+  } =
     await params;
 
   const data =
@@ -38,55 +44,93 @@ export async function generateMetadata({
     return {
       title:
         "Business not found | LeadNexus",
+
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
+  const seo =
+    await getPublicSeoSettings(
+      data.business.id,
+    );
+
+  const appUrl =
+    (
+      process.env
+        .NEXT_PUBLIC_APP_URL ??
+      "http://localhost:3000"
+    ).replace(
+      /\/$/,
+      "",
+    );
+
   const title =
-    data.settings.headline ||
-    data.business.name;
+    seo.title ||
+    `${data.business.name} | LeadNexus`;
 
   const description =
+    seo.description ||
     data.settings.subheadline ||
     data.settings.about ||
     data.business.description ||
     `Discover ${data.business.name} on LeadNexus.`;
 
-  return {
-    title:
-      `${title} | LeadNexus`,
+  const canonical =
+    seo.canonicalUrl ||
+    `${appUrl}/b/${data.business.slug}`;
 
-    description:
-      description.slice(
-        0,
-        160,
-      ),
+  return {
+    title,
+
+    description,
+
+    keywords:
+      seo.keywords.length >
+      0
+        ? seo.keywords
+        : undefined,
+
+    alternates: {
+      canonical,
+    },
+
+    robots: {
+      index:
+        seo.indexable,
+
+      follow:
+        seo.indexable,
+    },
 
     openGraph: {
-      title,
+      type: "website",
+
+      url:
+        canonical,
+
+      title:
+        seo.ogTitle ||
+        title,
+
       description:
-        description.slice(
-          0,
-          160,
-        ),
+        seo.ogDescription ||
+        description,
 
-      type:
-        "website",
-
-      images:
-        data.business.coverUrl
-          ? [
-              data.business
-                .coverUrl,
-            ]
-          : undefined,
+      siteName:
+        "LeadNexus",
     },
   };
 }
 
 export default async function PublicBusinessRoute({
   params,
-}: PublicPageProps) {
-  const { slug } =
+}: PublicBusinessRouteProps) {
+  const {
+    slug,
+  } =
     await params;
 
   const data =

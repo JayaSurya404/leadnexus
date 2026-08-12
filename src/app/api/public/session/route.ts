@@ -1,13 +1,4 @@
-﻿import { NextResponse } from "next/server";
-
-export async function GET() {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
-}
-
-export async function POST() {
-  return NextResponse.json({ error: "Not implemented" }, { status: 501 });
-}
-import {
+﻿import {
   NextResponse,
 } from "next/server";
 
@@ -18,6 +9,122 @@ import {
 import {
   publicSessionSchema,
 } from "@/lib/validation/public";
+
+type Attribution = {
+  source: string;
+
+  medium:
+    | string
+    | null;
+
+  campaign:
+    | string
+    | null;
+
+  content:
+    | string
+    | null;
+
+  term:
+    | string
+    | null;
+
+  trackingLinkId:
+    | string
+    | null;
+};
+
+function validUuid(
+  value:
+    | string
+    | null,
+) {
+  if (!value) {
+    return null;
+  }
+
+  const pattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+  return pattern.test(
+    value,
+  )
+    ? value
+    : null;
+}
+
+function attributionFromLandingPath(
+  landingPath: string,
+  fallbackSource:
+    | string
+    | null
+    | undefined,
+): Attribution {
+  try {
+    const url =
+      new URL(
+        landingPath,
+        "https://leadnexus.local",
+      );
+
+    return {
+      source:
+        url.searchParams.get(
+          "utm_source",
+        ) ??
+        fallbackSource ??
+        "Direct",
+
+      medium:
+        url.searchParams.get(
+          "utm_medium",
+        ),
+
+      campaign:
+        url.searchParams.get(
+          "utm_campaign",
+        ),
+
+      content:
+        url.searchParams.get(
+          "utm_content",
+        ),
+
+      term:
+        url.searchParams.get(
+          "utm_term",
+        ),
+
+      trackingLinkId:
+        validUuid(
+          url.searchParams.get(
+            "ln_tracking",
+          ),
+        ),
+    };
+  } catch {
+    return {
+      source:
+        fallbackSource ??
+        "Direct",
+
+      medium:
+        null,
+
+      campaign:
+        null,
+
+      content:
+        null,
+
+      term:
+        null,
+
+      trackingLinkId:
+        null,
+    };
+  }
+}
 
 export async function POST(
   request: Request,
@@ -48,8 +155,10 @@ export async function POST(
 
   const {
     businessId,
+    existingSessionId,
     anonymousId,
     source,
+    referrer,
     landingPath,
   } = parsed.data;
 
@@ -118,6 +227,157 @@ export async function POST(
     );
   }
 
+  const attribution =
+    attributionFromLandingPath(
+      landingPath,
+      source,
+    );
+
+  let trackingLinkId =
+    attribution.trackingLinkId;
+
+  if (trackingLinkId) {
+    const {
+      data: trackingLink,
+    } = await supabase
+      .from(
+        "tracking_links",
+      )
+      .select("id")
+      .eq(
+        "id",
+        trackingLinkId,
+      )
+      .eq(
+        "business_id",
+        businessId,
+      )
+      .eq(
+        "active",
+        true,
+      )
+      .maybeSingle();
+
+    if (!trackingLink) {
+      trackingLinkId =
+        null;
+    }
+  }
+
+  if (existingSessionId) {
+    const {
+      data:
+        existingSession,
+    } = await supabase
+      .from(
+        "visitor_sessions",
+      )
+      .select(
+        `
+          id,
+          visit_count
+        `,
+      )
+      .eq(
+        "id",
+        existingSessionId,
+      )
+      .eq(
+        "business_id",
+        businessId,
+      )
+      .maybeSingle();
+
+    if (existingSession) {
+      const {
+        error:
+          updateError,
+      } = await supabase
+        .from(
+          "visitor_sessions",
+        )
+        .update({
+          last_tracking_link_id:
+            trackingLinkId,
+
+          last_source:
+            attribution.source,
+
+          last_medium:
+            attribution.medium,
+
+          last_campaign:
+            attribution.campaign,
+
+          last_content:
+            attribution.content,
+
+          last_term:
+            attribution.term,
+
+          last_referrer:
+            referrer ??
+            null,
+
+          last_landing_path:
+            landingPath,
+
+          visit_count:
+            Number(
+              existingSession.visit_count ??
+                1,
+            ) + 1,
+
+          last_seen_at:
+            new Date()
+              .toISOString(),
+        })
+        .eq(
+          "id",
+          existingSession.id,
+        );
+
+      if (updateError) {
+        console.error(
+          "LeadNexus visitor session update:",
+          updateError,
+        );
+      }
+
+      const {
+        error:
+          returnActivityError,
+      } = await supabase
+        .from(
+          "activity_events",
+        )
+        .insert({
+          business_id:
+            businessId,
+
+          visitor_session_id:
+            existingSession.id,
+
+          event_type:
+            "RETURN_VISIT",
+        });
+
+      if (
+        returnActivityError
+      ) {
+        console.error(
+          "LeadNexus RETURN_VISIT event:",
+          returnActivityError,
+        );
+      }
+
+      return NextResponse.json({
+        sessionId:
+          existingSession.id,
+      });
+    }
+  }
+
   const {
     data: session,
     error:
@@ -134,11 +394,61 @@ export async function POST(
         anonymousId,
 
       first_source:
-        source ??
-        "Direct",
+        attribution.source,
+
+      first_tracking_link_id:
+        trackingLinkId,
+
+      first_medium:
+        attribution.medium,
+
+      first_campaign:
+        attribution.campaign,
+
+      first_content:
+        attribution.content,
+
+      first_term:
+        attribution.term,
+
+      first_referrer:
+        referrer ??
+        null,
+
+      last_tracking_link_id:
+        trackingLinkId,
+
+      last_source:
+        attribution.source,
+
+      last_medium:
+        attribution.medium,
+
+      last_campaign:
+        attribution.campaign,
+
+      last_content:
+        attribution.content,
+
+      last_term:
+        attribution.term,
+
+      last_referrer:
+        referrer ??
+        null,
 
       landing_path:
         landingPath,
+
+      last_landing_path:
+        landingPath,
+
+      visit_count:
+        1,
+
+      last_seen_at:
+        new Date()
+          .toISOString(),
     })
     .select("id")
     .single();

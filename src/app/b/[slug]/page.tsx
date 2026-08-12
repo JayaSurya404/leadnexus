@@ -15,6 +15,11 @@ import {
 } from "@/features/seo/queries";
 
 import {
+  buildBusinessStructuredData,
+  serializeJsonLd,
+} from "@/features/seo/structured-data";
+
+import {
   getPublicBusinessPage,
 } from "@/features/tracking/public-business";
 
@@ -26,6 +31,17 @@ type PublicBusinessRouteProps = {
     slug: string;
   }>;
 };
+
+function getAppUrl() {
+  return (
+    process.env
+      .NEXT_PUBLIC_APP_URL ??
+    "http://localhost:3000"
+  ).replace(
+    /\/$/,
+    "",
+  );
+}
 
 export async function generateMetadata({
   params,
@@ -42,8 +58,10 @@ export async function generateMetadata({
 
   if (!data) {
     return {
-      title:
-        "Business not found | LeadNexus",
+      title: {
+        absolute:
+          "Business not found | LeadNexus",
+      },
 
       robots: {
         index: false,
@@ -58,14 +76,7 @@ export async function generateMetadata({
     );
 
   const appUrl =
-    (
-      process.env
-        .NEXT_PUBLIC_APP_URL ??
-      "http://localhost:3000"
-    ).replace(
-      /\/$/,
-      "",
-    );
+    getAppUrl();
 
   const title =
     seo.title ||
@@ -83,7 +94,10 @@ export async function generateMetadata({
     `${appUrl}/b/${data.business.slug}`;
 
   return {
-    title,
+    title: {
+      absolute:
+        title,
+    },
 
     description,
 
@@ -106,7 +120,8 @@ export async function generateMetadata({
     },
 
     openGraph: {
-      type: "website",
+      type:
+        "website",
 
       url:
         canonical,
@@ -142,9 +157,38 @@ export default async function PublicBusinessRoute({
     notFound();
   }
 
+  const seo =
+    await getPublicSeoSettings(
+      data.business.id,
+    );
+
+  const canonical =
+    seo.canonicalUrl ||
+    `${getAppUrl()}/b/${data.business.slug}`;
+
+  const structuredData =
+    buildBusinessStructuredData(
+      data,
+      canonical,
+    );
+
   return (
-    <PublicBusinessPage
-      data={data}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html:
+            serializeJsonLd(
+              structuredData,
+            ),
+        }}
+      />
+
+      <PublicBusinessPage
+        data={
+          data
+        }
+      />
+    </>
   );
 }

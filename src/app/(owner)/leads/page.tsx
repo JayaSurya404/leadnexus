@@ -3,6 +3,7 @@
 } from "next";
 
 import {
+  Download,
   Search,
   Users,
 } from "lucide-react";
@@ -39,6 +40,7 @@ export const metadata: Metadata = {
 type LeadsPageProps = {
   searchParams: Promise<{
     q?: string;
+
     status?: string;
   }>;
 };
@@ -81,10 +83,8 @@ export default async function LeadsPage({
       params.status as
         LeadStatus,
     )
-      ? (
-          params.status as
-            LeadStatus
-        )
+      ? (params.status as
+          LeadStatus)
       : null;
 
   const leads =
@@ -131,29 +131,74 @@ export default async function LeadsPage({
       },
     );
 
+  const exportParams =
+    new URLSearchParams();
+
+  if (
+    params.q?.trim()
+  ) {
+    exportParams.set(
+      "q",
+      params.q.trim(),
+    );
+  }
+
+  if (
+    selectedStatus
+  ) {
+    exportParams.set(
+      "status",
+      selectedStatus,
+    );
+  }
+
+  const exportQuery =
+    exportParams.toString();
+
+  const exportHref =
+    exportQuery
+      ? `/api/leads/export?${exportQuery}`
+      : "/api/leads/export";
+
   return (
     <div className="space-y-8">
-      <div>
-        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          <Users className="size-4" />
-          Lead management
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+        <div>
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <Users className="size-4" />
+            Lead management
+          </div>
+
+          <h1 className="mt-2 text-3xl font-bold tracking-tight">
+            Leads
+          </h1>
+
+          <p className="mt-2 text-muted-foreground">
+            Manage direct-contact and
+            recovered leads visible to{" "}
+            <span className="font-medium text-foreground">
+              {
+                context.business
+                  .name
+              }
+            </span>
+            .
+          </p>
         </div>
 
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">
-          Leads
-        </h1>
-
-        <p className="mt-2 text-muted-foreground">
-          Manage direct-contact and
-          recovered leads visible to{" "}
-          <span className="font-medium text-foreground">
-            {
-              context.business
-                .name
+        <Button
+          asChild
+          variant="outline"
+        >
+          <a
+            href={
+              exportHref
             }
-          </span>
-          .
-        </p>
+          >
+            <Download className="size-4" />
+            Export CSV
+          </a>
+        </Button>
       </div>
 
       <form className="grid gap-3 rounded-xl border bg-background p-4 sm:grid-cols-[1fr_220px_auto]">
@@ -235,10 +280,17 @@ export default async function LeadsPage({
           </span>{" "}
           leads
         </p>
+
+        <p className="hidden text-xs text-muted-foreground sm:block">
+          CSV export follows the
+          current filters.
+        </p>
       </div>
 
       <OwnerLeadsTable
-        leads={leads}
+        leads={
+          leads
+        }
       />
     </div>
   );

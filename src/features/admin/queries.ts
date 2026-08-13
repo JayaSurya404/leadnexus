@@ -1,3 +1,7 @@
+import {
+  isRecoveryCandidate,
+} from "@/features/intelligence/recovery-rules";
+
 import "server-only";
 
 import {
@@ -588,38 +592,9 @@ export async function getAdminRecoveryQueue(): Promise<
     await getAdminLeads();
 
   const candidates =
-    leads.filter(
-      (lead) => {
-        if (
-          lead.visibility !==
-          "ADMIN_ONLY"
-        ) {
-          return false;
-        }
-
-        if (
-          lead.recoveryDecision ===
-            "IGNORED" ||
-          lead.recoveryDecision ===
-            "SENT_TO_OWNER"
-        ) {
-          return false;
-        }
-
-        return (
-          lead.temperature ===
-            "HOT" ||
-          lead.temperature ===
-            "WARM" ||
-          (
-            lead.score !==
-              null &&
-            lead.score >=
-              40
-          )
-        );
-      },
-    );
+  leads.filter(
+    isRecoveryCandidate,
+  );
 
   const supabase =
     createAdminClient();

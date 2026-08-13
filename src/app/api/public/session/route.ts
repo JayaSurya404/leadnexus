@@ -1,4 +1,8 @@
 ﻿import {
+  attributionFromLandingPath,
+} from "@/features/tracking/attribution";
+
+import {
   NextResponse,
 } from "next/server";
 
@@ -9,122 +13,6 @@ import {
 import {
   publicSessionSchema,
 } from "@/lib/validation/public";
-
-type Attribution = {
-  source: string;
-
-  medium:
-    | string
-    | null;
-
-  campaign:
-    | string
-    | null;
-
-  content:
-    | string
-    | null;
-
-  term:
-    | string
-    | null;
-
-  trackingLinkId:
-    | string
-    | null;
-};
-
-function validUuid(
-  value:
-    | string
-    | null,
-) {
-  if (!value) {
-    return null;
-  }
-
-  const pattern =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-  return pattern.test(
-    value,
-  )
-    ? value
-    : null;
-}
-
-function attributionFromLandingPath(
-  landingPath: string,
-  fallbackSource:
-    | string
-    | null
-    | undefined,
-): Attribution {
-  try {
-    const url =
-      new URL(
-        landingPath,
-        "https://leadnexus.local",
-      );
-
-    return {
-      source:
-        url.searchParams.get(
-          "utm_source",
-        ) ??
-        fallbackSource ??
-        "Direct",
-
-      medium:
-        url.searchParams.get(
-          "utm_medium",
-        ),
-
-      campaign:
-        url.searchParams.get(
-          "utm_campaign",
-        ),
-
-      content:
-        url.searchParams.get(
-          "utm_content",
-        ),
-
-      term:
-        url.searchParams.get(
-          "utm_term",
-        ),
-
-      trackingLinkId:
-        validUuid(
-          url.searchParams.get(
-            "ln_tracking",
-          ),
-        ),
-    };
-  } catch {
-    return {
-      source:
-        fallbackSource ??
-        "Direct",
-
-      medium:
-        null,
-
-      campaign:
-        null,
-
-      content:
-        null,
-
-      term:
-        null,
-
-      trackingLinkId:
-        null,
-    };
-  }
-}
 
 export async function POST(
   request: Request,
@@ -170,8 +58,12 @@ export async function POST(
     error:
       businessError,
   } = await supabase
-    .from("businesses")
-    .select("id")
+    .from(
+      "businesses",
+    )
+    .select(
+      "id",
+    )
     .eq(
       "id",
       businessId,
@@ -205,7 +97,9 @@ export async function POST(
     .from(
       "public_page_settings",
     )
-    .select("published")
+    .select(
+      "published",
+    )
     .eq(
       "business_id",
       businessId,
@@ -243,7 +137,9 @@ export async function POST(
       .from(
         "tracking_links",
       )
-      .select("id")
+      .select(
+        "id",
+      )
       .eq(
         "id",
         trackingLinkId,
@@ -450,7 +346,9 @@ export async function POST(
         new Date()
           .toISOString(),
     })
-    .select("id")
+    .select(
+      "id",
+    )
     .single();
 
   if (

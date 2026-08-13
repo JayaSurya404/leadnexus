@@ -1,2 +1,59 @@
-﻿import { test } from "@playwright/test";
-test.skip("admin awaits implementation", async () => undefined);
+﻿import {
+  expect,
+  test,
+} from "@playwright/test";
+
+import {
+  loginAsAdmin,
+} from "./test-helpers";
+
+test(
+  "admin can inspect businesses and platform leads",
+  async ({
+    page,
+  }) => {
+    await loginAsAdmin(
+      page,
+    );
+
+    await page.goto(
+      "/admin/businesses",
+    );
+
+    await expect(
+      page.getByRole(
+        "heading",
+        {
+          name:
+            "Businesses",
+        },
+      ),
+    ).toBeVisible();
+
+    await expect(
+      page.getByText(
+        "Aurora Digital Studio",
+      ).first(),
+    ).toBeVisible();
+
+    await page.goto(
+      "/admin/leads",
+    );
+
+    await expect(
+      page.getByRole(
+        "heading",
+        {
+          name:
+            "All leads",
+        },
+      ),
+    ).toBeVisible();
+
+    await expect(
+      page.getByText(
+        "Aurora Digital Studio",
+      ).first(),
+    ).toBeVisible();
+  },
+);

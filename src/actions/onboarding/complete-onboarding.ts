@@ -285,8 +285,6 @@ export async function completeOnboardingAction(
           );
 
         const {
-          data:
-            createdBusiness,
           error:
             createBusinessError,
         } = await supabase
@@ -361,16 +359,53 @@ export async function completeOnboardingAction(
 
             onboarding_step:
               1,
-          })
-          .select(
-            "id, slug",
-          )
-          .single();
+          });
 
-        if (
-          !createBusinessError &&
-          createdBusiness
-        ) {
+        if (!createBusinessError) {
+          /*
+           * Do not chain .select() onto the INSERT.
+           *
+           * The businesses SELECT policy allows rows only
+           * after the OWNER membership exists. That
+           * membership is created by the database trigger
+           * after the business is inserted. A separate
+           * request therefore lets the trigger finish first
+           * before RLS evaluates this SELECT.
+           */
+
+          const {
+            data:
+              createdBusiness,
+            error:
+              createdBusinessError,
+          } = await supabase
+            .from("businesses")
+            .select(
+              "id, slug",
+            )
+            .eq(
+              "slug",
+              slug,
+            )
+            .eq(
+              "created_by",
+              user.id,
+            )
+            .maybeSingle();
+
+          if (
+            createdBusinessError ||
+            !createdBusiness
+          ) {
+            throw new Error(
+              `Created business could not be loaded: ${
+                createdBusinessError
+                  ?.message ??
+                "Business row was not visible after creation."
+              }`,
+            );
+          }
+
           businessId =
             createdBusiness.id;
 
@@ -382,7 +417,7 @@ export async function completeOnboardingAction(
 
         lastInsertError =
           createBusinessError
-            ?.message ?? null;
+            .message;
 
         /*
          * 23505 = unique violation.

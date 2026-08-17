@@ -20,6 +20,12 @@ export type VoiceNexusLeadOption = {
     | null;
 
   status: string;
+
+  doNotCall: boolean;
+
+  handoffStatus: VoiceNexusOutboxStatus | null;
+
+  handoffEventId: string | null;
 };
 
 export type VoiceNexusOutboxItem = {

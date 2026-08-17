@@ -68,11 +68,14 @@ type LeadStatusFormProps = {
 
   currentStatus:
     LeadStatus;
+
+  doNotCall: boolean;
 };
 
 export function LeadStatusForm({
   leadId,
   currentStatus,
+  doNotCall,
 }: LeadStatusFormProps) {
   const action =
     updateOwnerLeadStatusAction.bind(
@@ -114,6 +117,11 @@ export function LeadStatusForm({
           ),
         )}
       </select>
+
+      <label className="flex items-start gap-2 rounded-lg border p-3 text-sm">
+        <input type="checkbox" name="doNotCall" defaultChecked={doNotCall} className="mt-0.5 size-4" />
+        <span><span className="font-medium">Do not call</span><span className="mt-1 block text-xs text-muted-foreground">Preserved in every VoiceNexus handoff and blocks calling there.</span></span>
+      </label>
 
       <Button
         type="submit"

@@ -112,6 +112,8 @@ export type OwnerLeadDetail = {
   status:
     LeadStatus;
 
+  doNotCall: boolean;
+
   contactIntent:
     LeadContactIntent;
 

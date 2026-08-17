@@ -392,6 +392,9 @@ export default async function LeadDetailPage({
                 currentStatus={
                   lead.status
                 }
+                doNotCall={
+                  lead.doNotCall
+                }
               />
             </CardContent>
           </Card>

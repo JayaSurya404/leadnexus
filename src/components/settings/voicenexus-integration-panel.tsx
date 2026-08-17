@@ -17,6 +17,7 @@ import {
 
 import {
   queueVoiceNexusLeadAction,
+  retryVoiceNexusHandoffAction,
 } from "@/actions/integrations/queue-voicenexus-lead";
 
 import {
@@ -79,11 +80,7 @@ export function VoiceNexusIntegrationPanel({
                 <CircleAlert className="size-3" />
               )}
 
-              {data.connected
-                ? "Connected"
-                : data.configured
-                  ? "API ready"
-                  : "Not configured"}
+              {data.connectionStatus.replaceAll("_", " ")}
             </Badge>
           </div>
         </CardHeader>
@@ -109,8 +106,7 @@ export function VoiceNexusIntegrationPanel({
               </p>
 
               <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                Add
-                VOICENEXUS_SHARED_SECRET
+                Add VOICENEXUS_SHARED_SECRET and VOICENEXUS_IMPORT_URL
                 to the LeadNexus server
                 environment before
                 VoiceNexus can consume
@@ -207,11 +203,12 @@ export function VoiceNexusIntegrationPanel({
             <div className="space-y-3">
               {data.leads.map(
                 (lead) => {
-                  const action =
-                    queueVoiceNexusLeadAction.bind(
-                      null,
-                      lead.id,
-                    );
+                  const retry = lead.handoffStatus === "FAILED" && lead.handoffEventId;
+                  const action = retry
+                    ? retryVoiceNexusHandoffAction.bind(null, lead.handoffEventId as string)
+                    : queueVoiceNexusLeadAction.bind(null, lead.id);
+                  const processing = lead.handoffStatus === "PENDING" || lead.handoffStatus === "PROCESSING";
+                  const label = retry ? "Retry" : processing ? "Pending" : lead.handoffStatus === "SENT" ? "Send update" : "Send to VoiceNexus";
 
                   return (
                     <div
@@ -236,6 +233,8 @@ export function VoiceNexusIntegrationPanel({
                             ? ` · ${lead.productName}`
                             : ""}
                         </p>
+
+                        {lead.doNotCall ? <Badge variant="destructive" className="mt-2">DO NOT CALL</Badge> : null}
                       </div>
 
                       <form
@@ -247,9 +246,10 @@ export function VoiceNexusIntegrationPanel({
                           type="submit"
                           size="sm"
                           variant="outline"
+                          disabled={processing}
                         >
                           <Send className="size-4" />
-                          Queue handoff
+                          {label}
                         </Button>
                       </form>
                     </div>
@@ -313,6 +313,7 @@ export function VoiceNexusIntegrationPanel({
                           }
                         </p>
                       ) : null}
+
                     </div>
 
                     <Badge

@@ -33,6 +33,7 @@ export async function getVoiceNexusIntegrationStatus(
             phone,
             email,
             status,
+            do_not_call,
             primary_product_id
           `,
         )
@@ -168,38 +169,6 @@ export async function getVoiceNexusIntegrationStatus(
     );
   }
 
-  const leads:
-    VoiceNexusLeadOption[] =
-      (
-        leadsResult.data ??
-        []
-      ).map(
-        (lead) => ({
-          id:
-            lead.id,
-
-          name:
-            lead.name,
-
-          phone:
-            lead.phone,
-
-          email:
-            lead.email,
-
-          productName:
-            lead.primary_product_id
-              ? productMap.get(
-                  lead.primary_product_id,
-                ) ??
-                null
-              : null,
-
-          status:
-            lead.status,
-        }),
-      );
-
   const events:
     VoiceNexusOutboxItem[] =
       (
@@ -266,6 +235,24 @@ export async function getVoiceNexusIntegrationStatus(
         },
       );
 
+  const latestEventByLead = new Map<string, VoiceNexusOutboxItem>();
+  for (const event of events) if (event.leadId && !latestEventByLead.has(event.leadId)) latestEventByLead.set(event.leadId, event);
+
+  const leads: VoiceNexusLeadOption[] = (leadsResult.data ?? []).map((lead) => {
+    const latest = latestEventByLead.get(lead.id);
+    return {
+      id: lead.id,
+      name: lead.name,
+      phone: lead.phone,
+      email: lead.email,
+      productName: lead.primary_product_id ? productMap.get(lead.primary_product_id) ?? null : null,
+      status: lead.status,
+      doNotCall: Boolean(lead.do_not_call),
+      handoffStatus: latest?.status ?? null,
+      handoffEventId: latest?.id ?? null
+    };
+  });
+
   const pending =
     events.filter(
       (event) =>
@@ -303,7 +290,7 @@ export async function getVoiceNexusIntegrationStatus(
     Boolean(
       process.env
         .VOICENEXUS_SHARED_SECRET,
-    );
+    ) && Boolean(process.env.VOICENEXUS_IMPORT_URL);
 
   const connection =
     connectionResult.data;
@@ -312,12 +299,11 @@ export async function getVoiceNexusIntegrationStatus(
     configured,
 
     connected:
-      connection?.status ===
-      "CONNECTED",
+      connection?.status === "VERIFIED",
 
     connectionStatus:
       connection?.status ??
-      "DISCONNECTED",
+      (configured ? "CONFIGURED" : "DISCONNECTED"),
 
     apiEndpoint:
       `${appUrl}/api/v1/integrations/leads`,

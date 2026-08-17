@@ -3,17 +3,12 @@
   NextResponse,
 } from "next/server";
 
-import {
-  isValidVoiceNexusAuthorization,
-} from "@/features/integrations/voicenexus-auth";
+import { verifyIntegrationRequest } from "@/features/integrations/integration-signing";
+import { voiceNexusAcknowledgeSchema } from "@/features/integrations/voicenexus-contract";
 
 import {
   createAdminClient,
 } from "@/lib/supabase/admin";
-
-import {
-  voiceNexusAcknowledgeSchema,
-} from "@/lib/validation/integration";
 
 export const runtime =
   "nodejs";
@@ -55,27 +50,28 @@ function unavailable() {
   );
 }
 
+function authenticate(request: NextRequest, body: string) {
+  const secret = process.env.VOICENEXUS_SHARED_SECRET;
+  if (!secret || secret.length < 32) return unavailable();
+
+  const timestamp = request.headers.get("x-integration-timestamp") ?? "";
+  const requestId = request.headers.get("x-integration-request-id") ?? "";
+  if (!/^[0-9]+$/.test(timestamp) || !/^[0-9a-f-]{36}$/i.test(requestId)) return unauthorized();
+
+  return verifyIntegrationRequest(secret, {
+    timestamp,
+    method: request.method,
+    path: `${request.nextUrl.pathname}${request.nextUrl.search}`,
+    requestId,
+    body,
+  }, request.headers.get("x-integration-signature")) ? null : unauthorized();
+}
+
 export async function GET(
   request: NextRequest,
 ) {
-  const secret =
-    process.env
-      .VOICENEXUS_SHARED_SECRET;
-
-  if (!secret) {
-    return unavailable();
-  }
-
-  if (
-    !isValidVoiceNexusAuthorization(
-      request.headers.get(
-        "authorization",
-      ),
-      secret,
-    )
-  ) {
-    return unauthorized();
-  }
+  const authenticationError = authenticate(request, "");
+  if (authenticationError) return authenticationError;
 
   const requestedLimit =
     Number(
@@ -190,31 +186,19 @@ export async function GET(
 export async function POST(
   request: NextRequest,
 ) {
-  const secret =
-    process.env
-      .VOICENEXUS_SHARED_SECRET;
-
-  if (!secret) {
-    return unavailable();
+  const rawBody = await request.text();
+  if (rawBody.length > 20_000) {
+    return NextResponse.json({ error: "Request body is too large." }, { status: 413, headers: { "Cache-Control": "no-store" } });
   }
+  const authenticationError = authenticate(request, rawBody);
+  if (authenticationError) return authenticationError;
 
-  if (
-    !isValidVoiceNexusAuthorization(
-      request.headers.get(
-        "authorization",
-      ),
-      secret,
-    )
-  ) {
-    return unauthorized();
+  let body: unknown;
+  try {
+    body = JSON.parse(rawBody);
+  } catch {
+    body = null;
   }
-
-  const body =
-    await request
-      .json()
-      .catch(
-        () => null,
-      );
 
   const parsed =
     voiceNexusAcknowledgeSchema.safeParse(
@@ -240,6 +224,7 @@ export async function POST(
 
   const {
     eventId,
+    businessId,
     status,
     error:
       consumerError,
@@ -260,12 +245,16 @@ export async function POST(
       `
         id,
         business_id,
-        attempt_count
+        status
       `,
     )
     .eq(
       "id",
       eventId,
+    )
+    .eq(
+      "business_id",
+      businessId,
     )
     .eq(
       "provider",
@@ -297,6 +286,11 @@ export async function POST(
     new Date()
       .toISOString();
 
+  const effectiveStatus =
+    event.status === "SENT"
+      ? "SENT"
+      : status;
+
   const {
     error:
       updateError,
@@ -305,26 +299,29 @@ export async function POST(
       "outbox_events",
     )
     .update({
-      status,
-
-      attempt_count:
-        Number(
-          event.attempt_count ??
-            0,
-        ) + 1,
+      status:
+        effectiveStatus,
 
       last_error:
-        status ===
+        effectiveStatus ===
         "FAILED"
           ? consumerError ??
             "VoiceNexus reported a failed handoff."
           : null,
 
       sent_at:
-        status ===
+        effectiveStatus ===
         "SENT"
           ? now
           : null,
+
+      processed_at:
+        effectiveStatus === "SENT"
+          ? now
+          : null,
+
+      response_payload:
+        parsed.data,
 
       updated_at:
         now,
@@ -332,6 +329,10 @@ export async function POST(
     .eq(
       "id",
       event.id,
+    )
+    .eq(
+      "business_id",
+      businessId,
     );
 
   if (updateError) {
@@ -372,23 +373,28 @@ export async function POST(
 
   const connectionPayload = {
     status:
-      status ===
+      effectiveStatus ===
       "SENT"
-        ? "CONNECTED"
+        ? "VERIFIED"
         : "ERROR",
 
     display_name:
       "VoiceNexus",
 
     last_error:
-      status ===
+      effectiveStatus ===
       "FAILED"
         ? consumerError ??
           "VoiceNexus reported a failed handoff."
+          : null,
+
+    last_synced_at:
+      effectiveStatus === "SENT"
+        ? now
         : null,
 
     connected_at:
-      status ===
+      effectiveStatus ===
       "SENT"
         ? now
         : null,
@@ -397,8 +403,9 @@ export async function POST(
       now,
   };
 
+  let connectionWrite;
   if (connection) {
-    await supabase
+    connectionWrite = await supabase
       .from(
         "integration_connections",
       )
@@ -414,7 +421,7 @@ export async function POST(
         "VOICENEXUS",
       );
   } else {
-    await supabase
+    connectionWrite = await supabase
       .from(
         "integration_connections",
       )
@@ -429,13 +436,23 @@ export async function POST(
       });
   }
 
+  if (connectionWrite.error) {
+    return NextResponse.json(
+      { error: "Unable to update VoiceNexus connection status." },
+      { status: 500, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
   return NextResponse.json(
     {
       success: true,
 
       eventId,
 
-      status,
+      businessId,
+
+      status:
+        effectiveStatus,
     },
     {
       headers: {

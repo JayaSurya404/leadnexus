@@ -243,7 +243,8 @@ export async function getOwnerLeads(
         contact_intent,
         primary_product_id,
         created_at,
-        owner_visible_at
+        owner_visible_at,
+        do_not_call
       `,
     )
     .eq(
@@ -492,7 +493,8 @@ export async function getOwnerLeadDetail(
         contact_intent,
         primary_product_id,
         created_at,
-        owner_visible_at
+        owner_visible_at,
+        do_not_call
       `,
     )
     .eq(
@@ -735,6 +737,9 @@ export async function getOwnerLeadDetail(
     status:
       lead.status as
         LeadStatus,
+
+    doNotCall:
+      Boolean(lead.do_not_call),
 
     contactIntent:
       lead.contact_intent as

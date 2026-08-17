@@ -55,6 +55,9 @@ export async function updateOwnerLeadStatusAction(
   const status =
     value as LeadStatus;
 
+  const doNotCall =
+    formData.get("doNotCall") === "on";
+
   const supabase =
     await createClient();
 
@@ -65,6 +68,7 @@ export async function updateOwnerLeadStatusAction(
     .from("leads")
     .update({
       status,
+      do_not_call: doNotCall,
     })
     .eq(
       "id",

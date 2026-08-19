@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import {
   revalidatePath,
@@ -112,13 +112,7 @@ export async function createProductAction(
             "featured",
           ) === "on",
 
-        sortOrder:
-          Number(
-            text(
-              formData,
-              "sortOrder",
-            ) || 0,
-          ),
+        sortOrder: 0,
       },
     );
 
@@ -141,6 +135,26 @@ export async function createProductAction(
 
   const supabase =
     await createClient();
+
+  // Auto-assign sort_order to position new product at end
+  const {
+    data: maxRow,
+  } = await supabase
+    .from("products")
+    .select("sort_order")
+    .eq(
+      "business_id",
+      context.business.id,
+    )
+    .order(
+      "sort_order",
+      { ascending: false },
+    )
+    .limit(1)
+    .maybeSingle();
+
+  const nextSortOrder =
+    (maxRow?.sort_order ?? -1) + 1;
 
   const { error } =
     await supabase
@@ -174,7 +188,7 @@ export async function createProductAction(
           value.featured,
 
         sort_order:
-          value.sortOrder,
+          nextSortOrder,
       });
 
   if (error) {

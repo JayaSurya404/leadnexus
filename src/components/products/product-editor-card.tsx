@@ -198,20 +198,6 @@ export function ProductEditorCard({
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>
-                Display order
-              </Label>
-
-              <Input
-                name="sortOrder"
-                type="number"
-                min={0}
-                defaultValue={
-                  product.sortOrder
-                }
-              />
-            </div>
 
             <label className="flex items-center gap-2 text-sm font-medium">
               <input

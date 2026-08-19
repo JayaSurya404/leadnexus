@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   useState,
@@ -257,6 +257,8 @@ export default function OnboardingWizard({
         youtubeUrl: "",
 
         xUrl: "",
+
+        telegramUrl: "",
 
         hours: Array.from(
           {

@@ -442,6 +442,18 @@ export async function getPublicBusinessPage(
       logoUrl,
 
       coverUrl,
+
+      businessPhone:
+        business.business_phone,
+
+      businessEmail:
+        business.business_email,
+
+      whatsappNumber:
+        business.whatsapp_number,
+
+      website:
+        business.website,
     },
 
     settings: {

@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import {
   revalidatePath,
@@ -58,6 +58,11 @@ export async function updateSocialLinksAction(
           "youtubeUrl",
         ),
 
+        telegramUrl: text(
+          formData,
+          "telegramUrl",
+        ),
+
         xUrl: text(
           formData,
           "xUrl",
@@ -94,6 +99,7 @@ export async function updateSocialLinksAction(
           "FACEBOOK",
           "LINKEDIN",
           "YOUTUBE",
+          "TELEGRAM",
           "X",
         ],
       );
@@ -142,6 +148,15 @@ export async function updateSocialLinksAction(
         "YouTube",
       url:
         values.youtubeUrl,
+    },
+
+    {
+      platform:
+        "TELEGRAM",
+      label:
+        "Telegram",
+      url:
+        values.telegramUrl,
     },
 
     {

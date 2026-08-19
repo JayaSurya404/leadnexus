@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import type {
   UseFormRegisterReturn,
@@ -92,6 +92,19 @@ export function SocialStep() {
           }
           inputProps={register(
             "youtubeUrl",
+          )}
+        />
+
+        <SocialField
+          id="telegramUrl"
+          label="Telegram"
+          badge="TG"
+          error={
+            errors.telegramUrl
+              ?.message
+          }
+          inputProps={register(
+            "telegramUrl",
           )}
         />
 

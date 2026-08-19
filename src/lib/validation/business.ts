@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 const phoneRegex =
   /^\+?[0-9\s\-()]+$/;
@@ -158,6 +158,9 @@ export const socialLinksSchema =
       optionalUrl(),
 
     youtubeUrl:
+      optionalUrl(),
+
+    telegramUrl:
       optionalUrl(),
 
     xUrl:

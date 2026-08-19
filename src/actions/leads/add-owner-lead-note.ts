@@ -57,10 +57,10 @@ export async function addOwnerLeadNoteAction(
   const supabase =
     await createClient();
 
+  // Verify the lead belongs to this business and is visible
   const {
     data: lead,
-    error:
-      leadError,
+    error: leadError,
   } = await supabase
     .from("leads")
     .select("id")
@@ -91,100 +91,21 @@ export async function addOwnerLeadNoteAction(
     );
   }
 
-  /*
-   * The original LeadNexus schema was
-   * created before this UI phase.
-   *
-   * This supports the common note/author
-   * field variants without changing the
-   * deployed database.
-   */
+  // Insert with the exact columns matching the lead_notes schema:
+  //   id, lead_id, author_user_id, note, created_at, updated_at
+  const {
+    error: insertError,
+  } = await supabase
+    .from("lead_notes")
+    .insert({
+      lead_id: leadId,
+      author_user_id: context.userId,
+      note,
+    });
 
-  const noteColumns = [
-    "note",
-    "note_text",
-    "body",
-    "content",
-  ] as const;
-
-  const authorColumns = [
-    "author_user_id",
-    "author_id",
-    "created_by",
-    null,
-  ] as const;
-
-  let lastError:
-    string | null =
-      null;
-
-  let inserted =
-    false;
-
-  for (
-    const noteColumn of
-      noteColumns
-  ) {
-    for (
-      const authorColumn of
-        authorColumns
-    ) {
-      const payload:
-        Record<
-          string,
-          unknown
-        > = {
-        business_id:
-          context.business.id,
-
-        lead_id:
-          leadId,
-
-        [noteColumn]:
-          note,
-      };
-
-      if (
-        authorColumn
-      ) {
-        payload[
-          authorColumn
-        ] =
-          context.userId;
-      }
-
-      const {
-        error:
-          insertError,
-      } = await supabase
-        .from(
-          "lead_notes",
-        )
-        .insert(
-          payload,
-        );
-
-      if (!insertError) {
-        inserted =
-          true;
-
-        break;
-      }
-
-      lastError =
-        insertError.message;
-    }
-
-    if (inserted) {
-      break;
-    }
-  }
-
-  if (!inserted) {
+  if (insertError) {
     throw new Error(
-      lastError
-        ? `Unable to add note: ${lastError}`
-        : "Unable to add note.",
+      `Unable to add note: ${insertError.message}`,
     );
   }
 

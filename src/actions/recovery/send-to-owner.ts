@@ -28,7 +28,7 @@ export async function sendLeadToOwnerAction(
   } = await supabase.rpc(
     "send_recovered_lead_to_owner",
     {
-      p_lead_id:
+      target_lead_id:
         leadId,
     },
   );

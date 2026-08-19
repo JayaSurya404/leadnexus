@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   Metadata,
 } from "next";
 
@@ -9,6 +9,10 @@ import {
 import {
   PublicBusinessPage,
 } from "@/components/public-business/public-business-page";
+
+import {
+  ContactSection,
+} from "@/components/public-business/contact-section";
 
 import {
   getPublicSeoSettings,
@@ -189,6 +193,17 @@ export default async function PublicBusinessRoute({
           data
         }
       />
+
+      <div className="mx-auto w-full max-w-6xl px-5 pb-16 sm:px-8">
+        <ContactSection
+          businessId={data.business.id}
+          phone={data.settings.showPhone ? data.business.businessPhone : null}
+          email={data.settings.showEmail ? data.business.businessEmail : null}
+          whatsapp={data.settings.showWhatsapp ? data.business.whatsappNumber : null}
+          website={data.contactAvailability.website ? data.business.website : null}
+          socials={data.settings.showSocialLinks ? data.socials : []}
+        />
+      </div>
     </>
   );
 }

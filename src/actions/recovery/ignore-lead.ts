@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import {
   revalidatePath,
@@ -28,7 +28,7 @@ export async function ignoreRecoveryLeadAction(
   } = await supabase.rpc(
     "ignore_recovered_lead",
     {
-      p_lead_id:
+      target_lead_id:
         leadId,
     },
   );

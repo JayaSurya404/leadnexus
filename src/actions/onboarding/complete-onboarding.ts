@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import {
   onboardingSchema,
@@ -598,6 +598,11 @@ export async function completeOnboardingAction(
         "X",
         values.xUrl,
         "X",
+      ],
+      [
+        "TELEGRAM",
+        values.telegramUrl,
+        "Telegram",
       ],
     ] as const;
 

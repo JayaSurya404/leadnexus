@@ -109,19 +109,6 @@ export function CreateProductForm() {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="create-sortOrder">
-              Display order
-            </Label>
-
-            <Input
-              id="create-sortOrder"
-              name="sortOrder"
-              type="number"
-              min={0}
-              defaultValue={0}
-            />
-          </div>
 
           <label className="flex items-center gap-2 text-sm font-medium">
             <input

@@ -1,4 +1,4 @@
-﻿import type {
+import type {
   Metadata,
 } from "next";
 
@@ -672,6 +672,18 @@ if (!business) {
               defaultValue={
                 socialMap.get(
                   "YOUTUBE",
+                ) ?? ""
+              }
+            />
+
+            <Field
+              label="Telegram"
+              name="telegramUrl"
+              type="url"
+              placeholder="https://..."
+              defaultValue={
+                socialMap.get(
+                  "TELEGRAM",
                 ) ?? ""
               }
             />

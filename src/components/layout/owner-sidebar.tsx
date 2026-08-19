@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 
@@ -9,9 +9,8 @@ import {
   LayoutDashboard,
   Link2,
   Package,
+  PhoneOutgoing,
   RefreshCcw,
-  Search,
-  Settings,
   Sparkles,
   Users,
 } from "lucide-react";
@@ -30,6 +29,28 @@ const navigation = [
 
     icon:
       LayoutDashboard,
+  },
+
+  {
+    label:
+      "Business",
+
+    href:
+      "/business",
+
+    icon:
+      Building2,
+  },
+
+  {
+    label:
+      "Products",
+
+    href:
+      "/products",
+
+    icon:
+      Package,
   },
 
   {
@@ -56,17 +77,6 @@ const navigation = [
 
   {
     label:
-      "Products",
-
-    href:
-      "/products",
-
-    icon:
-      Package,
-  },
-
-  {
-    label:
       "Tracking Links",
 
     href:
@@ -89,35 +99,13 @@ const navigation = [
 
   {
     label:
-      "SEO",
+      "VoiceNexus",
 
     href:
-      "/seo",
+      "/voicenexus",
 
     icon:
-      Search,
-  },
-
-  {
-    label:
-      "Business",
-
-    href:
-      "/business",
-
-    icon:
-      Building2,
-  },
-
-  {
-    label:
-      "Settings",
-
-    href:
-      "/settings",
-
-    icon:
-      Settings,
+      PhoneOutgoing,
   },
 ] as const;
 

@@ -57,6 +57,10 @@ export type PublicBusinessPageData = {
 
     logoUrl: string | null;
     coverUrl: string | null;
+    businessPhone?: string | null;
+    businessEmail?: string | null;
+    whatsappNumber?: string | null;
+    website?: string | null;
   };
 
   settings: {

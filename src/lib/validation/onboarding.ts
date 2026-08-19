@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 const phoneRegex =
   /^\+?[0-9\s\-()]+$/;
@@ -296,6 +296,9 @@ export const onboardingSchema = z
       optionalUrlSchema,
 
     xUrl:
+      optionalUrlSchema,
+
+    telegramUrl:
       optionalUrlSchema,
 
     hours: z

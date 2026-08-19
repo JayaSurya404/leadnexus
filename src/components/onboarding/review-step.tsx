@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import {
   useFormContext,
@@ -22,6 +22,7 @@ export function ReviewStep() {
     values.facebookUrl,
     values.linkedinUrl,
     values.youtubeUrl,
+    values.telegramUrl,
     values.xUrl,
   ].filter(
     (value) =>

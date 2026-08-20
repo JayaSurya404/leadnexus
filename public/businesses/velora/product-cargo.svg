@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <rect width="100%" height="100%" fill="#090d16"/>
+  <!-- Cargo EV Graphic -->
+  <circle cx="150" cy="250" r="45" fill="none" stroke="#facc15" stroke-width="8"/>
+  <circle cx="450" cy="250" r="45" fill="none" stroke="#facc15" stroke-width="8"/>
+  <rect x="220" y="110" width="220" height="140" fill="#1e293b" stroke="#38bdf8" stroke-width="4" rx="8"/> <!-- Cargo Box -->
+  <path d="M 150 250 L 220 250 L 220 180 L 180 180 Z" fill="#0284c7"/> <!-- Cabin -->
+  <rect x="0" y="320" width="600" height="80" fill="#090d16" opacity="0.95"/>
+  <text x="30" y="355" font-family="Inter, sans-serif" font-weight="800" font-size="22" fill="#ffffff">Velora FleetMax Cargo EV</text>
+  <text x="30" y="380" font-family="Inter, sans-serif" font-weight="600" font-size="15" fill="#fde047">350 kg Payload • Heavy-Duty Battery • Delivery Operator Special</text>
+</svg>

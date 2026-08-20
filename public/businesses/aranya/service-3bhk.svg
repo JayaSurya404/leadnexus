@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <rect width="100%" height="100%" fill="#1c1917"/>
+  <!-- Living Room Art -->
+  <rect x="80" y="80" width="300" height="180" fill="#78716c" rx="8"/> <!-- TV Panel -->
+  <rect x="120" y="110" width="220" height="120" fill="#0f172a" rx="4"/> <!-- TV Screen -->
+  <rect x="420" y="100" width="120" height="160" fill="#065f46" rx="8"/> <!-- Accent Wall -->
+  <rect x="60" y="270" width="480" height="30" fill="#d97706" rx="4"/> <!-- Console -->
+  <rect x="0" y="320" width="600" height="80" fill="#065f46" opacity="0.95"/>
+  <text x="30" y="355" font-family="Inter, sans-serif" font-weight="800" font-size="22" fill="#ffffff">3BHK Turnkey Interior Design</text>
+  <text x="30" y="380" font-family="Inter, sans-serif" font-weight="600" font-size="15" fill="#fef08a">False Ceiling, Lighting, Modular Storage & Living Decor</text>
+</svg>

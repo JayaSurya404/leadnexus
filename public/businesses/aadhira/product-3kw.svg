@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <rect width="100%" height="100%" fill="#1e293b"/>
+  <!-- House Roof with Solar -->
+  <polygon points="300,80 100,240 500,240" fill="#334155"/>
+  <rect x="140" y="240" width="320" height="120" fill="#475569"/>
+  <!-- Solar panels on roof -->
+  <g transform="translate(180, 130) rotate(-15) skewX(20)" fill="#1e3a8a" stroke="#fbbf24" stroke-width="2">
+    <rect x="0" y="0" width="60" height="40"/>
+    <rect x="65" y="0" width="60" height="40"/>
+    <rect x="130" y="0" width="60" height="40"/>
+    <rect x="0" y="45" width="60" height="40"/>
+    <rect x="65" y="45" width="60" height="40"/>
+    <rect x="130" y="45" width="60" height="40"/>
+  </g>
+  <rect x="0" y="320" width="600" height="80" fill="#0f172a" opacity="0.9"/>
+  <text x="30" y="355" font-family="Inter, sans-serif" font-weight="800" font-size="22" fill="#ffffff">3kW Residential Rooftop Solar</text>
+  <text x="30" y="380" font-family="Inter, sans-serif" font-weight="600" font-size="15" fill="#fde047">Ideal for 2-3 BHK Homes • Saves up to 360 units/month</text>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <rect width="100%" height="100%" fill="#0f172a"/>
+  <!-- Modern Villa Roof -->
+  <polygon points="300,50 60,220 540,220" fill="#1e293b"/>
+  <rect x="100" y="220" width="400" height="140" fill="#334155"/>
+  <!-- 5kW Large Solar Array -->
+  <g transform="translate(140, 100) rotate(-12)" fill="#172554" stroke="#22c55e" stroke-width="2">
+    <rect x="0" y="0" width="70" height="45"/>
+    <rect x="75" y="0" width="70" height="45"/>
+    <rect x="150" y="0" width="70" height="45"/>
+    <rect x="225" y="0" width="70" height="45"/>
+    <rect x="0" y="50" width="70" height="45"/>
+    <rect x="75" y="50" width="70" height="45"/>
+    <rect x="150" y="50" width="70" height="45"/>
+    <rect x="225" y="50" width="70" height="45"/>
+  </g>
+  <rect x="0" y="320" width="600" height="80" fill="#064e3b" opacity="0.95"/>
+  <text x="30" y="355" font-family="Inter, sans-serif" font-weight="800" font-size="22" fill="#ffffff">5kW Residential High-Yield Solar</text>
+  <text x="30" y="380" font-family="Inter, sans-serif" font-weight="600" font-size="15" fill="#4ade80">For Villas & Duplex Homes • Net Metering & Subsidy Support</text>
+</svg>

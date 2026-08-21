@@ -558,22 +558,6 @@ export function PublicBusinessPage({
                             " ",
                           )}
                         >
-                          <div
-                            className="flex h-44 items-center justify-center bg-muted/50 bg-cover bg-center"
-                            style={
-                              product.imageUrl
-                                ? {
-                                    backgroundImage:
-                                      `url("${product.imageUrl}")`,
-                                  }
-                                : undefined
-                            }
-                          >
-                            {!product.imageUrl ? (
-                              <BriefcaseBusiness className="size-8 text-muted-foreground" />
-                            ) : null}
-                          </div>
-
                           <div className="p-5">
                             <div className="flex flex-wrap gap-2">
                               <Badge variant="outline">

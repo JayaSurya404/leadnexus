@@ -7,10 +7,6 @@ import {
 } from "next/navigation";
 
 import {
-  format,
-} from "date-fns";
-
-import {
   ArrowLeft,
   CalendarDays,
   Mail,
@@ -48,6 +44,10 @@ import {
 import {
   Button,
 } from "@/components/ui/button";
+
+import {
+  LocalDateTime,
+} from "@/components/ui/local-date-time";
 
 import {
   Card,
@@ -251,12 +251,11 @@ export default async function LeadDetailPage({
                   </p>
 
                   <p className="mt-1 font-medium">
-                    {format(
-                      new Date(
-                        lead.createdAt,
-                      ),
-                      "MMM d, yyyy · h:mm a",
-                    )}
+                    <LocalDateTime
+                      value={
+                        lead.createdAt
+                      }
+                    />
                   </p>
                 </div>
               </div>
@@ -354,12 +353,11 @@ export default async function LeadDetailPage({
                           </p>
 
                           <p className="mt-3 text-xs text-muted-foreground">
-                            {format(
-                              new Date(
-                                note.createdAt,
-                              ),
-                              "MMM d, yyyy · h:mm a",
-                            )}
+                            <LocalDateTime
+                              value={
+                                note.createdAt
+                              }
+                            />
                           </p>
                         </div>
                       ),

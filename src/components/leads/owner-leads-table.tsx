@@ -62,7 +62,7 @@ function TemperatureBadge({
         className="border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-300"
       >
         <Flame className="size-3" />
-        Hot
+        Hot Lead
         {score !== null
           ? ` · ${score}`
           : ""}

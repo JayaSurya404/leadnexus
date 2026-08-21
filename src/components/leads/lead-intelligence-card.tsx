@@ -104,9 +104,10 @@ export function LeadIntelligenceCard({
                   intelligence.temperature,
                 )}
 
-                {
-                  intelligence.temperature
-                }
+                {intelligence.temperature ===
+                "HOT"
+                  ? "Hot Lead"
+                  : intelligence.temperature}
               </Badge>
 
               {intelligence.score !==

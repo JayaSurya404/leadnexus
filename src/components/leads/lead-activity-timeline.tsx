@@ -1,10 +1,10 @@
 import {
-  format,
-} from "date-fns";
-
-import {
   Activity,
 } from "lucide-react";
+
+import {
+  LocalDateTime,
+} from "@/components/ui/local-date-time";
 
 import type {
   LeadActivityItem,
@@ -115,12 +115,11 @@ export function LeadActivityTimeline({
               </p>
 
               <p className="mt-1 text-xs text-muted-foreground">
-                {format(
-                  new Date(
-                    event.createdAt,
-                  ),
-                  "MMM d, yyyy · h:mm a",
-                )}
+                <LocalDateTime
+                  value={
+                    event.createdAt
+                  }
+                />
               </p>
             </div>
           </div>

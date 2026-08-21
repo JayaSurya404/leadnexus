@@ -10,7 +10,6 @@ import {
 } from "react";
 
 import {
-  BriefcaseBusiness,
   Clock3,
   ExternalLink,
   Globe2,
@@ -413,77 +412,47 @@ export function PublicBusinessPage({
 
   return (
     <main className="min-h-screen bg-muted/20">
-      {data.business.coverUrl ? (
-        <div
-          className="h-52 w-full bg-cover bg-center sm:h-72"
-          style={{
-            backgroundImage:
-              `linear-gradient(to bottom, transparent, rgba(0,0,0,.45)), url("${data.business.coverUrl}")`,
-          }}
-        />
-      ) : (
-        <div className="h-32 bg-gradient-to-br from-primary/20 via-primary/5 to-background sm:h-48" />
-      )}
-
-      <div className="mx-auto w-full max-w-6xl px-5 pb-16 sm:px-8">
-        <section className="-mt-14 rounded-3xl border bg-background p-6 shadow-lg sm:p-8">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
-            <div
-              className="flex size-24 shrink-0 items-center justify-center rounded-2xl border bg-background bg-cover bg-center shadow-sm"
-              style={
-                data.business.logoUrl
-                  ? {
-                      backgroundImage:
-                        `url("${data.business.logoUrl}")`,
-                    }
-                  : undefined
-              }
-            >
-              {!data.business.logoUrl ? (
-                <BriefcaseBusiness className="size-9 text-muted-foreground" />
-              ) : null}
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <div className="flex flex-wrap gap-2">
-                {data.business.category ? (
-                  <Badge variant="secondary">
-                    {
-                      data.business.category
-                    }
-                  </Badge>
-                ) : null}
-
-                {data.business.businessType ? (
-                  <Badge variant="outline">
-                    {
-                      data.business.businessType
-                    }
-                  </Badge>
-                ) : null}
-              </div>
-
-              <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
-                {data.settings.headline ||
-                  data.business.name}
-              </h1>
-
-              {data.settings.subheadline ? (
-                <p className="mt-3 max-w-3xl text-lg leading-7 text-muted-foreground">
+      <div className="mx-auto w-full max-w-6xl px-5 pb-16 pt-10 sm:px-8 sm:pt-14">
+        <section className="rounded-3xl border bg-background p-6 shadow-lg sm:p-8">
+          <div className="min-w-0">
+            <div className="flex flex-wrap gap-2">
+              {data.business.category ? (
+                <Badge variant="secondary">
                   {
-                    data.settings.subheadline
+                    data.business.category
                   }
-                </p>
+                </Badge>
               ) : null}
 
-              {data.settings.showLocation &&
-              location ? (
-                <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="size-4" />
-                  {location}
-                </p>
+              {data.business.businessType ? (
+                <Badge variant="outline">
+                  {
+                    data.business.businessType
+                  }
+                </Badge>
               ) : null}
             </div>
+
+            <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+              {data.settings.headline ||
+                data.business.name}
+            </h1>
+
+            {data.settings.subheadline ? (
+              <p className="mt-3 max-w-3xl text-lg leading-7 text-muted-foreground">
+                {
+                  data.settings.subheadline
+                }
+              </p>
+            ) : null}
+
+            {data.settings.showLocation &&
+            location ? (
+              <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                <MapPin className="size-4" />
+                {location}
+              </p>
+            ) : null}
           </div>
         </section>
 

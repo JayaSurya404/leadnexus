@@ -12,7 +12,7 @@ describe(
   "lead UI fixes",
   () => {
     it(
-      "keeps business branding but omits public product images",
+      "omits all images from the public business page",
       () => {
         const source =
           readFileSync(
@@ -24,16 +24,22 @@ describe(
           );
 
         expect(source).toContain(
-          "data.business.logoUrl",
-        );
-        expect(source).toContain(
-          "data.business.coverUrl",
-        );
-        expect(source).toContain(
           "product.name",
         );
         expect(source).not.toContain(
+          "data.business.logoUrl",
+        );
+        expect(source).not.toContain(
+          "data.business.coverUrl",
+        );
+        expect(source).not.toContain(
           "product.imageUrl",
+        );
+        expect(source).not.toContain(
+          "backgroundImage",
+        );
+        expect(source).toContain(
+          "pb-16 pt-10",
         );
       },
     );

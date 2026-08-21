@@ -3,6 +3,52 @@ type TemplateVariables = {
   productName: string;
 };
 
+export function resolveContactMessage({
+  productTemplate,
+  businessTemplate,
+  businessName,
+  productName,
+}: {
+  productTemplate?:
+    | string
+    | null;
+
+  businessTemplate?:
+    | string
+    | null;
+
+  businessName: string;
+
+  productName?:
+    | string
+    | null;
+}) {
+  const fallback =
+    productName
+      ? `Hi ${businessName},\nI'm interested in the ${productName}.\nPlease share pricing details, availability and the next steps.`
+      : `Hi ${businessName},\nI'm interested in learning more about your products/services.\nPlease share pricing details, availability and the next steps.`;
+
+  const selectedTemplate =
+    productTemplate ??
+    businessTemplate;
+
+  if (
+    !selectedTemplate?.trim()
+  ) {
+    return fallback;
+  }
+
+  return renderContactTemplate(
+    selectedTemplate,
+    {
+      businessName,
+      productName:
+        productName ??
+        "your products or services",
+    },
+  );
+}
+
 export function renderContactTemplate(
   template: string,
   variables: TemplateVariables,

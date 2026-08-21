@@ -567,6 +567,12 @@ export async function getOwnerLeadDetail(
       .eq(
         "lead_id",
         leadId,
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false,
+        },
       ),
 
     supabase

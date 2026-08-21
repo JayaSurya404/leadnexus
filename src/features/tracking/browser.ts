@@ -260,7 +260,9 @@ export async function createPublicContact({
 }: {
   businessId: string;
   sessionId: string;
-  leadId: string;
+  leadId:
+    | string
+    | null;
 
   productId:
     | string

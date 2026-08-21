@@ -9,6 +9,7 @@ import {
   buildPhoneUrl,
   buildWhatsappUrl,
   renderContactTemplate,
+  resolveContactMessage,
 } from "../../src/features/contact/message-template";
 
 describe(
@@ -30,6 +31,46 @@ describe(
           ),
         ).toBe(
           "Hi Acme, I am interested in Website Development.",
+        );
+      },
+    );
+
+    it(
+      "prefers product, then business, then safe fallback messages",
+      () => {
+        expect(
+          resolveContactMessage({
+            productTemplate:
+              "Product: {{product_name}}",
+            businessTemplate:
+              "Business: {{business_name}}",
+            businessName:
+              "Velora EV Mobility",
+            productName:
+              "Velora CityRide E2",
+          }),
+        ).toBe(
+          "Product: Velora CityRide E2",
+        );
+
+        expect(
+          resolveContactMessage({
+            businessTemplate:
+              "Hello {{business_name}}",
+            businessName:
+              "Velora EV Mobility",
+          }),
+        ).toBe(
+          "Hello Velora EV Mobility",
+        );
+
+        expect(
+          resolveContactMessage({
+            businessName:
+              "Velora EV Mobility",
+          }),
+        ).toContain(
+          "pricing details, availability and the next steps",
         );
       },
     );

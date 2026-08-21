@@ -1,6 +1,19 @@
+"use client";
+
 import {
+  useActionState,
+  useEffect,
+  useRef,
+} from "react";
+
+import {
+  Loader2,
   Plus,
 } from "lucide-react";
+
+import {
+  toast,
+} from "sonner";
 
 import {
   addOwnerLeadNoteAction,
@@ -31,9 +44,50 @@ export function LeadNoteForm({
       leadId,
     );
 
+  const [
+    state,
+    formAction,
+    pending,
+  ] = useActionState(
+    action,
+    {
+      status:
+        "idle",
+    },
+  );
+
+  const formRef =
+    useRef<HTMLFormElement>(
+      null,
+    );
+
+  useEffect(() => {
+    if (
+      state.status ===
+      "success"
+    ) {
+      formRef.current?.reset();
+      toast.success(
+        state.message ??
+          "Note saved.",
+      );
+    }
+
+    if (
+      state.status ===
+      "error"
+    ) {
+      toast.error(
+        state.message ??
+          "Unable to save the note.",
+      );
+    }
+  }, [state]);
+
   return (
     <form
-      action={action}
+      ref={formRef}
+      action={formAction}
       className="space-y-3"
     >
       <Label htmlFor="note">
@@ -49,9 +103,33 @@ export function LeadNoteForm({
         required
       />
 
-      <Button type="submit">
-        <Plus className="size-4" />
-        Add note
+      {state.message ? (
+        <p
+          role="status"
+          aria-live="polite"
+          className={
+            state.status ===
+            "error"
+              ? "text-sm text-destructive"
+              : "text-sm text-emerald-600"
+          }
+        >
+          {state.message}
+        </p>
+      ) : null}
+
+      <Button
+        type="submit"
+        disabled={pending}
+      >
+        {pending ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <Plus className="size-4" />
+        )}
+        {pending
+          ? "Saving..."
+          : "Add note"}
       </Button>
     </form>
   );

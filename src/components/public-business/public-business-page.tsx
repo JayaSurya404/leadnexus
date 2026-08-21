@@ -21,7 +21,6 @@ import {
   MessageCircle,
   Phone,
   Share2,
-  Sparkles,
   Star,
 } from "lucide-react";
 
@@ -163,6 +162,26 @@ export function PublicBusinessPage({
         }
 
         setSessionId(id);
+
+        const storedLeadId =
+          window.sessionStorage.getItem(
+            `leadnexus:lead:${data.business.id}`,
+          );
+
+        const storedProductId =
+          window.sessionStorage.getItem(
+            `leadnexus:product:${data.business.id}`,
+          );
+
+        if (storedLeadId) {
+          setLeadId(storedLeadId);
+        }
+
+        if (storedProductId) {
+          setSelectedProductId(
+            storedProductId,
+          );
+        }
 
         void trackPublicActivity({
           businessId:
@@ -763,6 +782,9 @@ export function PublicBusinessPage({
               onProductChange={
                 setSelectedProductId
               }
+              onSessionReady={
+                setSessionId
+              }
               onCaptured={({
                 leadId:
                   capturedLeadId,
@@ -773,9 +795,25 @@ export function PublicBusinessPage({
                   capturedLeadId,
                 );
 
+                window.sessionStorage.setItem(
+                  `leadnexus:lead:${data.business.id}`,
+                  capturedLeadId,
+                );
+
                 setSelectedProductId(
                   productId,
                 );
+
+                if (productId) {
+                  window.sessionStorage.setItem(
+                    `leadnexus:product:${data.business.id}`,
+                    productId,
+                  );
+                } else {
+                  window.sessionStorage.removeItem(
+                    `leadnexus:product:${data.business.id}`,
+                  );
+                }
               }}
             />
 
@@ -881,10 +919,6 @@ export function PublicBusinessPage({
           </aside>
         </div>
 
-        <footer className="mt-14 flex items-center justify-center gap-2 border-t pt-8 text-sm text-muted-foreground">
-          <Sparkles className="size-4" />
-          Powered by LeadNexus
-        </footer>
       </div>
     </main>
   );

@@ -67,6 +67,9 @@ export async function getPublicBusinessPage(
         state,
         country,
         service_area
+        ,
+        logo_url,
+        cover_url
       `,
     )
     .eq(
@@ -136,7 +139,8 @@ export async function getPublicBusinessPage(
           price_text,
           featured,
           sort_order,
-          created_at
+          created_at,
+          image_url
         `,
       )
       .eq(
@@ -309,7 +313,7 @@ export async function getPublicBusinessPage(
             logoFile.created_at ??
             "",
         )
-      : null;
+      : business.logo_url;
 
   const coverUrl =
     coverFile
@@ -320,7 +324,7 @@ export async function getPublicBusinessPage(
             coverFile.created_at ??
             "",
         )
-      : null;
+      : business.cover_url;
 
   const productMediaMap =
     new Map(
@@ -356,7 +360,7 @@ export async function getPublicBusinessPage(
                     media.created_at ??
                     "",
                 )
-              : null;
+              : product.image_url;
 
           return {
             id:

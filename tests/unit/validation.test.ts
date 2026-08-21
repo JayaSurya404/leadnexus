@@ -47,6 +47,27 @@ describe(
     );
 
     it(
+      "accepts existing PostgreSQL UUIDs that use a non-RFC variant nibble",
+      () => {
+        const result =
+          publicSessionSchema.safeParse({
+            businessId:
+              "c3333333-3333-4333-c333-333333333333",
+            anonymousId:
+              "visitor-velora",
+            source:
+              "Direct",
+            landingPath:
+              "/b/velora-ev-mobility",
+          });
+
+        expect(
+          result.success,
+        ).toBe(true);
+      },
+    );
+
+    it(
       "rejects invalid lead phone number",
       () => {
         const result =

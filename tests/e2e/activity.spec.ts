@@ -37,7 +37,7 @@ test(
       );
 
     await page.goto(
-      "/b/aurora-digital-studio",
+      "/b/aadhira-sungrid-energy",
     );
 
     const session =

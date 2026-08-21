@@ -6,7 +6,7 @@ import {
   buildEmailUrl,
   buildPhoneUrl,
   buildWhatsappUrl,
-  renderContactTemplate,
+  resolveContactMessage,
 } from "@/features/contact/message-template";
 
 import {
@@ -54,6 +54,105 @@ const eventByChannel:
     "LINKEDIN_CLICK",
 };
 
+async function contactMessage({
+  supabase,
+  businessId,
+  channel,
+  businessName,
+  productId,
+  productName,
+}: {
+  supabase:
+    ReturnType<
+      typeof createAdminClient
+    >;
+
+  businessId: string;
+
+  channel:
+    | "WHATSAPP"
+    | "EMAIL";
+
+  businessName: string;
+
+  productId:
+    | string
+    | null
+    | undefined;
+
+  productName:
+    | string
+    | null;
+}) {
+  let productTemplate:
+    | string
+    | null = null;
+
+  if (productId) {
+    const {
+      data,
+    } = await supabase
+      .from("contact_templates")
+      .select("message_template")
+      .eq(
+        "business_id",
+        businessId,
+      )
+      .eq(
+        "channel",
+        channel,
+      )
+      .eq(
+        "product_id",
+        productId,
+      )
+      .eq(
+        "active",
+        true,
+      )
+      .limit(1)
+      .maybeSingle();
+
+    productTemplate =
+      data?.message_template ??
+      null;
+  }
+
+  const {
+    data: businessTemplate,
+  } = await supabase
+    .from("contact_templates")
+    .select("message_template")
+    .eq(
+      "business_id",
+      businessId,
+    )
+    .eq(
+      "channel",
+      channel,
+    )
+    .is(
+      "product_id",
+      null,
+    )
+    .eq(
+      "active",
+      true,
+    )
+    .limit(1)
+    .maybeSingle();
+
+  return resolveContactMessage({
+    productTemplate,
+    businessTemplate:
+      businessTemplate
+        ?.message_template ??
+      null,
+    businessName,
+    productName,
+  });
+}
+
 export async function POST(
   request: Request,
 ) {
@@ -95,7 +194,6 @@ export async function POST(
   const [
     businessResult,
     sessionResult,
-    leadResult,
   ] = await Promise.all([
     supabase
       .from("businesses")
@@ -134,7 +232,33 @@ export async function POST(
       )
       .maybeSingle(),
 
-    supabase
+  ]);
+
+  const business =
+    businessResult.data;
+
+  if (
+    businessResult.error ||
+    !business ||
+    sessionResult.error ||
+    !sessionResult.data
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Contact request could not be verified.",
+      },
+      {
+        status: 400,
+      },
+    );
+  }
+
+  if (leadId) {
+    const {
+      data: lead,
+      error: leadError,
+    } = await supabase
       .from("leads")
       .select("id")
       .eq(
@@ -149,33 +273,27 @@ export async function POST(
         "visitor_session_id",
         sessionId,
       )
-      .maybeSingle(),
-  ]);
+      .maybeSingle();
 
-  const business =
-    businessResult.data;
-
-  if (
-    businessResult.error ||
-    !business ||
-    sessionResult.error ||
-    !sessionResult.data ||
-    leadResult.error ||
-    !leadResult.data
-  ) {
-    return NextResponse.json(
-      {
-        error:
-          "Contact request could not be verified.",
-      },
-      {
-        status: 400,
-      },
-    );
+    if (
+      leadError ||
+      !lead
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Captured enquiry could not be verified.",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
   }
 
-  let productName =
-    "your products or services";
+  let productName:
+    | string
+    | null = null;
 
   if (productId) {
     const {
@@ -244,46 +362,17 @@ export async function POST(
       );
     }
 
-    const {
-      data: template,
-    } = await supabase
-      .from(
-        "contact_templates",
-      )
-      .select(
-        "message_template",
-      )
-      .eq(
-        "business_id",
-        businessId,
-      )
-      .eq(
-        "channel",
-        "WHATSAPP",
-      )
-      .is(
-        "product_id",
-        null,
-      )
-      .eq(
-        "active",
-        true,
-      )
-      .limit(1)
-      .maybeSingle();
-
     const message =
-      renderContactTemplate(
-        template
-          ?.message_template ??
-          "Hi {{business_name}}, I'm interested in {{product_name}}. Could you please share more information?",
-        {
-          businessName:
-            business.name,
-
-          productName,
-        },
-      );
+      await contactMessage({
+        supabase,
+        businessId,
+        channel:
+          "WHATSAPP",
+        businessName:
+          business.name,
+        productId,
+        productName,
+      });
 
     destination =
       buildWhatsappUrl(
@@ -310,46 +399,17 @@ export async function POST(
       );
     }
 
-    const {
-      data: template,
-    } = await supabase
-      .from(
-        "contact_templates",
-      )
-      .select(
-        "message_template",
-      )
-      .eq(
-        "business_id",
-        businessId,
-      )
-      .eq(
-        "channel",
-        "EMAIL",
-      )
-      .is(
-        "product_id",
-        null,
-      )
-      .eq(
-        "active",
-        true,
-      )
-      .limit(1)
-      .maybeSingle();
-
     const message =
-      renderContactTemplate(
-        template
-          ?.message_template ??
-          "Hello {{business_name}}, I'm interested in {{product_name}}. Please share more information.",
-        {
-          businessName:
-            business.name,
-
-          productName,
-        },
-      );
+      await contactMessage({
+        supabase,
+        businessId,
+        channel:
+          "EMAIL",
+        businessName:
+          business.name,
+        productId,
+        productName,
+      });
 
     destination =
       buildEmailUrl({
@@ -357,7 +417,9 @@ export async function POST(
           business.business_email,
 
         subject:
-          `Enquiry about ${productName}`,
+          productName
+            ? `Enquiry about ${productName}`
+            : `General enquiry for ${business.name}`,
 
         message,
       });
@@ -467,7 +529,8 @@ export async function POST(
         sessionId,
 
       lead_id:
-        leadId,
+        leadId ??
+        null,
 
       product_id:
         productId ??

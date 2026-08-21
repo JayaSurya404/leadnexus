@@ -71,12 +71,12 @@ test(
     page,
   }) => {
     await page.goto(
-      "/b/aurora-digital-studio",
+      "/b/aadhira-sungrid-energy",
     );
 
     await expect(
       page.getByText(
-        "Aurora Digital Studio",
+        "Aadhira SunGrid Energy",
       ).first(),
     ).toBeVisible();
 
@@ -98,16 +98,16 @@ test(
     page,
   }) => {
     await page.goto(
-      "/l/demoig01",
+      "/l/solar-google",
     );
 
     await page.waitForURL(
-      /\/b\/aurora-digital-studio/,
+      /\/b\/aadhira-sungrid-energy/,
     );
 
     await expect(
       page.getByText(
-        "Aurora Digital Studio",
+        "Aadhira SunGrid Energy",
       ).first(),
     ).toBeVisible();
   },
@@ -153,12 +153,12 @@ test.describe(
         page,
       }) => {
         await page.goto(
-          "/b/aurora-digital-studio",
+          "/b/aadhira-sungrid-energy",
         );
 
         await expect(
           page.getByText(
-            "Aurora Digital Studio",
+            "Aadhira SunGrid Energy",
           ).first(),
         ).toBeVisible();
 

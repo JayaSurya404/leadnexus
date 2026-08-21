@@ -5,7 +5,7 @@
 
 import {
   loginAsAdmin,
-} from "./test-helpers";
+} from "./authenticated-session";
 
 test(
   "admin can inspect the recovery queue",

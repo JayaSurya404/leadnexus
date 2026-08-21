@@ -9,8 +9,8 @@ import {
 } from "@/lib/auth/require-admin";
 
 import {
-  createAdminClient,
-} from "@/lib/supabase/admin";
+  createClient,
+} from "@/lib/supabase/server";
 
 export async function sendLeadToOwnerAction(
   leadId: string,
@@ -21,7 +21,7 @@ export async function sendLeadToOwnerAction(
   await requireAdmin();
 
   const supabase =
-    createAdminClient();
+    await createClient();
 
   const {
     error,

@@ -5,7 +5,7 @@ import {
 
 import {
   loginAsAdmin,
-} from "./test-helpers";
+} from "./authenticated-session";
 
 test(
   "visitor enquiry is captured and becomes visible to admin",
@@ -16,10 +16,10 @@ test(
       Date.now();
 
     const email =
-      `playwright.${unique}@example.com`;
+      `playwright.${unique}@qa.invalid`;
 
     await page.goto(
-      "/b/aurora-digital-studio",
+      "/b/aadhira-sungrid-energy",
     );
 
     const continueButton =
@@ -33,7 +33,7 @@ test(
 
     await expect(
       continueButton,
-    ).toBeEnabled({
+    ).toBeDisabled({
       timeout:
         15_000,
     });
@@ -51,25 +51,28 @@ test(
         "Phone",
       )
       .fill(
-        "+91 9000012345",
+        "+91 74218 56039",
       );
 
     await page
       .getByLabel(
-        "Email",
+        "Email (optional)",
+        {
+          exact:
+            true,
+        },
       )
-      .fill(
-        email,
-      );
+      .fill(email);
 
-    await page
-      .getByLabel(
-        "Interested in",
-      )
-      .selectOption({
-        label:
-          "AI Website Starter",
-      });
+    await expect(
+      page.getByLabel(
+        /Interested in/,
+      ),
+    ).toHaveValue("");
+
+    await expect(
+      continueButton,
+    ).toBeEnabled();
 
     const leadResponse =
       page.waitForResponse(
@@ -148,6 +151,80 @@ test(
             true,
         },
       ),
+    ).toBeVisible();
+
+    await page.goto(
+      "/b/aadhira-sungrid-energy",
+    );
+
+    await expect(
+      page.getByRole(
+        "heading",
+        {
+          name:
+            "Contact Business",
+        },
+      ),
+    ).toBeVisible();
+
+    await page.evaluate(() => {
+      const opened = window as typeof window & {
+        __leadNexusOpenedUrl?: string;
+      };
+      opened.open = ((url?: string | URL) => {
+        opened.__leadNexusOpenedUrl = String(url ?? "");
+        return null;
+      }) as typeof window.open;
+    });
+
+    const contactResponse = page.waitForResponse(
+      (candidate) =>
+        candidate.url().includes("/api/public/contact") &&
+        candidate.request().method() === "POST",
+    );
+
+    await page.locator("section").filter({
+      has: page.getByRole(
+        "heading",
+        {
+          name:
+            "Contact Business",
+        },
+      ),
+    }).getByRole(
+      "button",
+      {
+        name:
+          "WhatsApp",
+        exact:
+          true,
+      },
+    ).click();
+
+    expect(
+      (await contactResponse).ok(),
+    ).toBe(true);
+
+    const openedUrl = await page.evaluate(() =>
+      (window as typeof window & {
+        __leadNexusOpenedUrl?: string;
+      }).__leadNexusOpenedUrl ?? "",
+    );
+
+    expect(openedUrl).toContain("https://wa.me/");
+    expect(openedUrl).toContain("text=");
+
+    await page.goto(
+      `/admin/leads?q=${encodeURIComponent(
+        email,
+      )}`,
+    );
+
+    await expect(
+      page
+        .getByRole("row")
+        .filter({ hasText: "Playwright QA Lead" })
+        .getByText("Owner visible", { exact: true }),
     ).toBeVisible();
   },
 );

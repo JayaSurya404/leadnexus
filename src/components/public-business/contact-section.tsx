@@ -1,9 +1,14 @@
 "use client";
 
 import {
+  useState,
+} from "react";
+
+import {
   Briefcase,
   Camera,
   Globe,
+  Loader2,
   Mail,
   MessageCircle,
   MessageSquare,
@@ -17,7 +22,15 @@ import {
   Button,
 } from "@/components/ui/button";
 
+import {
+  createPublicContact,
+  ensurePublicSession,
+  trackPublicActivity,
+} from "@/features/tracking/browser";
+
 import type {
+  PublicActivityEvent,
+  PublicContactChannel,
   PublicSocialLink,
 } from "@/types/public-business";
 
@@ -35,7 +48,10 @@ type ContactOption = {
   label: string;
   icon: React.ReactNode;
   url: string;
-  event: string;
+  event:
+    PublicActivityEvent;
+  channel?:
+    PublicContactChannel;
 };
 
 function platformIcon(
@@ -75,7 +91,7 @@ function platformIcon(
 
 function platformEvent(
   platform: string,
-) {
+): PublicActivityEvent {
   switch (platform) {
     case "INSTAGRAM":
       return "INSTAGRAM_CLICK";
@@ -86,7 +102,7 @@ function platformEvent(
     case "YOUTUBE":
       return "YOUTUBE_CLICK";
     case "X":
-      return "CTA_CLICK";
+      return "X_CLICK";
     case "TELEGRAM":
       return "TELEGRAM_CLICK";
     default:
@@ -103,6 +119,20 @@ export function ContactSection({
   socials,
   sessionId,
 }: ContactSectionProps) {
+  const [
+    loading,
+    setLoading,
+  ] = useState<string | null>(
+    null,
+  );
+
+  const [
+    error,
+    setError,
+  ] = useState<string | null>(
+    null,
+  );
+
   function resolveSessionId() {
     if (sessionId) {
       return sessionId;
@@ -117,62 +147,83 @@ export function ContactSection({
     );
   }
 
-  function trackAndOpen(
-    eventType: string,
-    url: string,
+  async function trackAndOpen(
+    option: ContactOption,
   ) {
-    const sid =
-      resolveSessionId();
+    setError(null);
+    setLoading(option.label);
 
-    if (sid) {
-      const payload =
-        JSON.stringify({
+    try {
+      let sid =
+        resolveSessionId();
+
+      if (!sid) {
+        sid = await ensurePublicSession({
           businessId,
-          sessionId: sid,
-          eventType,
-        });
-
-      if (navigator.sendBeacon) {
-        const blob = new Blob(
-          [payload],
-          {
-            type: "application/json",
-          },
-        );
-
-        navigator.sendBeacon(
-          "/api/public/activity",
-          blob,
-        );
-      } else {
-        fetch(
-          "/api/public/activity",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-            body: payload,
-            keepalive: true,
-          },
-        ).catch(() => {
-          /* fire-and-forget */
+          source:
+            new URLSearchParams(
+              window.location.search,
+            ).get("utm_source") ??
+            "Direct",
+          landingPath:
+            `${window.location.pathname}${window.location.search}`,
         });
       }
-    }
 
-    if (
-      url.startsWith("tel:") ||
-      url.startsWith("mailto:")
-    ) {
-      window.open(url, "_self");
-    } else {
-      window.open(
-        url,
-        "_blank",
-        "noopener,noreferrer",
+      let destination =
+        option.url;
+
+      if (option.channel) {
+        const result =
+          await createPublicContact({
+            businessId,
+            sessionId: sid,
+            leadId:
+              window.sessionStorage.getItem(
+                `leadnexus:lead:${businessId}`,
+              ),
+            productId:
+              window.sessionStorage.getItem(
+                `leadnexus:product:${businessId}`,
+              ),
+            channel:
+              option.channel,
+          });
+
+        destination =
+          result.url;
+      } else {
+        await trackPublicActivity({
+          businessId,
+          sessionId: sid,
+          eventType:
+            option.event,
+        });
+      }
+
+      if (
+        destination.startsWith("tel:") ||
+        destination.startsWith("mailto:")
+      ) {
+        window.open(
+          destination,
+          "_self",
+        );
+      } else {
+        window.open(
+          destination,
+          "_blank",
+          "noopener,noreferrer",
+        );
+      }
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Unable to open this contact option.",
       );
+    } finally {
+      setLoading(null);
     }
   }
 
@@ -187,6 +238,7 @@ export function ContactSection({
       ),
       url: `tel:${phone}`,
       event: "PHONE_CLICK",
+      channel: "PHONE",
     });
   }
 
@@ -198,6 +250,7 @@ export function ContactSection({
       ),
       url: `mailto:${email}`,
       event: "EMAIL_CLICK",
+      channel: "EMAIL",
     });
   }
 
@@ -215,6 +268,7 @@ export function ContactSection({
       ),
       url: `https://wa.me/${num}`,
       event: "WHATSAPP_CLICK",
+      channel: "WHATSAPP",
     });
   }
 
@@ -226,6 +280,7 @@ export function ContactSection({
       ),
       url: website,
       event: "WEBSITE_CLICK",
+      channel: "WEBSITE",
     });
   }
 
@@ -241,6 +296,15 @@ export function ContactSection({
       event: platformEvent(
         social.platform,
       ),
+      channel:
+        social.platform ===
+          "INSTAGRAM" ||
+        social.platform ===
+          "FACEBOOK" ||
+        social.platform ===
+          "LINKEDIN"
+          ? social.platform
+          : undefined,
     });
   }
 
@@ -264,14 +328,21 @@ export function ContactSection({
               aria-label={
                 opt.label
               }
+              disabled={
+                loading !== null
+              }
               onClick={() =>
-                trackAndOpen(
-                  opt.event,
-                  opt.url,
+                void trackAndOpen(
+                  opt,
                 )
               }
             >
-              {opt.icon}
+              {loading ===
+              opt.label ? (
+                <Loader2 className="size-5 animate-spin" />
+              ) : (
+                opt.icon
+              )}
 
               <span className="text-sm font-medium">
                 {opt.label}
@@ -280,6 +351,15 @@ export function ContactSection({
           ),
         )}
       </div>
+
+      {error ? (
+        <p
+          role="alert"
+          className="mt-4 text-sm text-destructive"
+        >
+          {error}
+        </p>
+      ) : null}
     </section>
   );
 }

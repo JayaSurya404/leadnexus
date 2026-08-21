@@ -12,6 +12,15 @@ import {
   createClient,
 } from "@/lib/supabase/server";
 
+export type LeadNoteActionState = {
+  status:
+    | "idle"
+    | "success"
+    | "error";
+
+  message?: string;
+};
+
 function getNote(
   formData: FormData,
 ) {
@@ -30,8 +39,12 @@ function getNote(
 
 export async function addOwnerLeadNoteAction(
   leadId: string,
+  previousState:
+    LeadNoteActionState,
   formData: FormData,
-) {
+) : Promise<LeadNoteActionState> {
+  void previousState;
+
   const context =
     await requireOwner();
 
@@ -41,17 +54,21 @@ export async function addOwnerLeadNoteAction(
   if (
     note.length < 1
   ) {
-    throw new Error(
-      "Write a note first.",
-    );
+    return {
+      status: "error",
+      message:
+        "Write a note first.",
+    };
   }
 
   if (
     note.length > 2000
   ) {
-    throw new Error(
-      "Note is too long.",
-    );
+    return {
+      status: "error",
+      message:
+        "Note is too long.",
+    };
   }
 
   const supabase =
@@ -86,30 +103,46 @@ export async function addOwnerLeadNoteAction(
     leadError ||
     !lead
   ) {
-    throw new Error(
-      "Lead could not be found.",
-    );
+    return {
+      status: "error",
+      message:
+        "Lead could not be found.",
+    };
   }
 
-  // Insert with the exact columns matching the lead_notes schema:
-  //   id, lead_id, author_user_id, note, created_at, updated_at
   const {
     error: insertError,
   } = await supabase
     .from("lead_notes")
     .insert({
+      business_id:
+        context.business.id,
+
       lead_id: leadId,
       author_user_id: context.userId,
       note,
     });
 
   if (insertError) {
-    throw new Error(
-      `Unable to add note: ${insertError.message}`,
+    console.error(
+      "LeadNexus note save failed:",
+      insertError.code,
     );
+
+    return {
+      status: "error",
+      message:
+        "Unable to save this note. Your text is still available; please try again.",
+    };
   }
 
   revalidatePath(
     `/leads/${leadId}`,
   );
+
+  return {
+    status: "success",
+    message:
+      "Note saved.",
+  };
 }

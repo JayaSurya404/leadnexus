@@ -72,7 +72,7 @@ export async function POST(
     .from(
       "visitor_sessions",
     )
-    .select("id")
+    .select("id, lead_id")
     .eq(
       "id",
       sessionId,
@@ -136,32 +136,51 @@ export async function POST(
     }
   }
 
+  const leadValues = {
+    primary_product_id:
+      productId ??
+      null,
+
+    name:
+      name.trim(),
+
+    phone:
+      phone.trim(),
+
+    email:
+      nullable(email),
+  };
+
+  const leadMutation =
+    session.lead_id
+      ? supabase
+          .from("leads")
+          .update(leadValues)
+          .eq(
+            "id",
+            session.lead_id,
+          )
+          .eq(
+            "business_id",
+            businessId,
+          )
+      : supabase
+          .from("leads")
+          .insert({
+            ...leadValues,
+
+            business_id:
+              businessId,
+
+            visitor_session_id:
+              sessionId,
+          });
+
   const {
     data: lead,
     error:
       leadError,
-  } = await supabase
-    .from("leads")
-    .insert({
-      business_id:
-        businessId,
-
-      visitor_session_id:
-        sessionId,
-
-      primary_product_id:
-        productId ??
-        null,
-
-      name:
-        name.trim(),
-
-      phone:
-        phone.trim(),
-
-      email:
-        nullable(email),
-    })
+  } = await leadMutation
     .select("id")
     .single();
 
@@ -185,6 +204,36 @@ export async function POST(
     );
   }
 
+  const {
+    error:
+      activityError,
+  } = await supabase
+    .from("activity_events")
+    .insert({
+      business_id:
+        businessId,
+
+      session_id:
+        sessionId,
+
+      lead_id:
+        lead.id,
+
+      product_id:
+        productId ??
+        null,
+
+      event_type:
+        "LEAD_FORM_SUBMITTED",
+    });
+
+  if (activityError) {
+    console.error(
+      "LeadNexus lead submission activity:",
+      activityError,
+    );
+  }
+
   /*
    * Lead defaults and visibility are
    * intentionally controlled by the
@@ -203,7 +252,10 @@ export async function POST(
         lead.id,
     },
     {
-      status: 201,
+      status:
+        session.lead_id
+          ? 200
+          : 201,
     },
   );
 }

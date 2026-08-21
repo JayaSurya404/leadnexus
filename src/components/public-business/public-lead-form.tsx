@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import {
+  ensurePublicSession,
   submitPublicLead,
   trackPublicActivity,
 } from "@/features/tracking/browser";
@@ -56,6 +57,10 @@ type PublicLeadFormProps = {
       | null,
   ) => void;
 
+  onSessionReady: (
+    sessionId: string,
+  ) => void;
+
   onCaptured: ({
     leadId,
     productId,
@@ -74,6 +79,7 @@ export function PublicLeadForm({
   products,
   selectedProductId,
   onProductChange,
+  onSessionReady,
   onCaptured,
 }: PublicLeadFormProps) {
   const [
@@ -114,8 +120,63 @@ export function PublicLeadForm({
       null,
     );
 
+  const [
+    attempted,
+    setAttempted,
+  ] = useState(false);
+
   const started =
     useRef(false);
+
+  const nameValid =
+    name.trim().length >= 2;
+
+  const phoneValid =
+    /^\+[1-9]\d{7,14}$/.test(
+      phone.replace(
+        /[\s()-]/g,
+        "",
+      ),
+    );
+
+  const emailValid =
+    email.trim() === "" ||
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      email.trim(),
+    );
+
+  const formValid =
+    nameValid &&
+    phoneValid &&
+    emailValid;
+
+  async function resolveSession() {
+    if (sessionId) {
+      return sessionId;
+    }
+
+    const params =
+      new URLSearchParams(
+        window.location.search,
+      );
+
+    const resolvedSessionId =
+      await ensurePublicSession({
+        businessId,
+        source:
+          params.get("utm_source") ??
+          params.get("source") ??
+          "Direct",
+        landingPath:
+          `${window.location.pathname}${window.location.search}`,
+      });
+
+    onSessionReady(
+      resolvedSessionId,
+    );
+
+    return resolvedSessionId;
+  }
 
   function markStarted() {
     if (
@@ -148,9 +209,15 @@ export function PublicLeadForm({
   ) {
     event.preventDefault();
 
-    if (!sessionId) {
+    if (submitting) {
+      return;
+    }
+
+    setAttempted(true);
+
+    if (!formValid) {
       setError(
-        "The page is still preparing. Please try again.",
+        "Check the highlighted contact details and try again.",
       );
 
       return;
@@ -160,11 +227,15 @@ export function PublicLeadForm({
     setSubmitting(true);
 
     try {
+      const resolvedSessionId =
+        await resolveSession();
+
       const result =
         await submitPublicLead(
           {
             businessId,
-            sessionId,
+            sessionId:
+              resolvedSessionId,
 
             productId:
               selectedProductId,
@@ -208,9 +279,10 @@ export function PublicLeadForm({
         </h3>
 
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          Choose one of the contact
-          options below to continue your
-          enquiry with the business.
+          Your enquiry was captured.
+          Choose a contact option below
+          if you would like to speak with
+          the business now.
         </p>
       </div>
     );
@@ -228,9 +300,9 @@ export function PublicLeadForm({
         </h2>
 
         <p className="mt-1 text-sm leading-6 text-muted-foreground">
-          Share your contact details so
-          the business can identify your
-          enquiry.
+          Share your name and phone
+          number. Choosing a product is
+          optional.
         </p>
       </div>
 
@@ -250,8 +322,19 @@ export function PublicLeadForm({
             )
           }
           autoComplete="name"
+          aria-invalid={
+            attempted &&
+            !nameValid
+          }
           required
         />
+
+        {attempted &&
+        !nameValid ? (
+          <p className="text-xs text-destructive">
+            Enter at least two characters.
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
@@ -272,13 +355,28 @@ export function PublicLeadForm({
           }
           autoComplete="tel"
           placeholder="+91..."
+          aria-invalid={
+            attempted &&
+            !phoneValid
+          }
           required
         />
+
+        {attempted &&
+        !phoneValid ? (
+          <p className="text-xs text-destructive">
+            Use an international number
+            such as +91 98765 43210.
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
         <Label htmlFor="lead-email">
-          Email
+          Email{" "}
+          <span className="font-normal text-muted-foreground">
+            (optional)
+          </span>
         </Label>
 
         <Input
@@ -294,14 +392,29 @@ export function PublicLeadForm({
           }
           autoComplete="email"
           placeholder="Optional"
+          aria-invalid={
+            attempted &&
+            !emailValid
+          }
         />
+
+        {attempted &&
+        !emailValid ? (
+          <p className="text-xs text-destructive">
+            Enter a valid email address
+            or leave this blank.
+          </p>
+        ) : null}
       </div>
 
       {products.length >
       0 ? (
         <div className="space-y-2">
           <Label htmlFor="lead-product">
-            Interested in
+            Interested in{" "}
+            <span className="font-normal text-muted-foreground">
+              (optional)
+            </span>
           </Label>
 
           <select
@@ -356,7 +469,7 @@ export function PublicLeadForm({
         className="w-full"
         disabled={
           submitting ||
-          !sessionId
+          !formValid
         }
       >
         {submitting ? (

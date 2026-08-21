@@ -6,7 +6,9 @@ import Link from "next/link";
 
 import {
   ArrowRight,
+  BadgeCheck,
   Building2,
+  EyeOff,
   Flame,
   RotateCcw,
   Users,
@@ -70,6 +72,20 @@ export default async function AdminPage() {
         "OWNER_VISIBLE",
     ).length;
 
+  const adminOnly =
+    leads.filter(
+      (lead) =>
+        lead.visibility ===
+        "ADMIN_ONLY",
+    ).length;
+
+  const recovered =
+    leads.filter(
+      (lead) =>
+        lead.contactIntent ===
+        "RECOVERED",
+    ).length;
+
   return (
     <div className="space-y-8">
       <div>
@@ -88,7 +104,7 @@ export default async function AdminPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <AdminStatCard
           label="Businesses"
           value={
@@ -98,6 +114,7 @@ export default async function AdminPage() {
           icon={
             <Building2 className="size-5" />
           }
+          accent="blue"
         />
 
         <AdminStatCard
@@ -109,6 +126,17 @@ export default async function AdminPage() {
           icon={
             <Users className="size-5" />
           }
+          accent="violet"
+        />
+
+        <AdminStatCard
+          label="Admin-only captures"
+          value={adminOnly}
+          description="Captured enquiries not yet visible to owners."
+          icon={
+            <EyeOff className="size-5" />
+          }
+          accent="slate"
         />
 
         <AdminStatCard
@@ -120,10 +148,11 @@ export default async function AdminPage() {
           icon={
             <Flame className="size-5" />
           }
+          accent="orange"
         />
 
         <AdminStatCard
-          label="Recovery queue"
+          label="Pending recovery"
           value={
             recovery.length
           }
@@ -131,6 +160,17 @@ export default async function AdminPage() {
           icon={
             <RotateCcw className="size-5" />
           }
+          accent="amber"
+        />
+
+        <AdminStatCard
+          label="Recovered for owners"
+          value={recovered}
+          description="Admin-approved leads sent to the correct business."
+          icon={
+            <BadgeCheck className="size-5" />
+          }
+          accent="emerald"
         />
       </div>
 

@@ -3,12 +3,13 @@ import {
 } from "zod";
 
 const uuidSchema =
-  z.string().uuid();
+  z.string().regex(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    "Invalid UUID",
+  );
 
 const optionalUuidSchema =
-  z
-    .string()
-    .uuid()
+  uuidSchema
     .nullable()
     .optional();
 
@@ -120,14 +121,10 @@ export const publicLeadSchema =
     phone: z
       .string()
       .trim()
-      .min(
-        7,
-        "Enter a valid phone number",
-      )
       .max(32)
       .regex(
-        /^\+?[0-9\s\-()]+$/,
-        "Enter a valid phone number",
+        /^\+[1-9][0-9\s\-()]{7,20}$/,
+        "Use an international phone number such as +91 98765 43210",
       ),
 
     email: z
@@ -153,7 +150,7 @@ export const publicContactSchema =
       uuidSchema,
 
     leadId:
-      uuidSchema,
+      optionalUuidSchema,
 
     productId:
       optionalUuidSchema,

@@ -5,7 +5,7 @@
 
 import {
   loginAsOwner,
-} from "./test-helpers";
+} from "./authenticated-session";
 
 test(
   "owner can access visible leads and CSV export",
@@ -42,14 +42,61 @@ test(
 
     await expect(
       page.getByText(
-        "Aurora Digital Studio",
+        "Aadhira SunGrid Energy",
       ).first(),
     ).toBeVisible();
 
     await expect(
       page.getByText(
-        "Priya Raman",
+        "Rakesh Iyer",
       ).first(),
+    ).toBeVisible();
+
+    await page.getByRole(
+      "link",
+      {
+        name:
+          "Rakesh Iyer",
+        exact:
+          true,
+      },
+    ).first().click();
+
+    const note =
+      `Playwright follow-up ${Date.now()}`;
+
+    await page.getByLabel(
+      "Add note",
+    ).fill(note);
+
+    const saveButton = page.getByRole(
+      "button",
+      {
+        name:
+          "Add note",
+      },
+    );
+
+    await saveButton.click();
+
+    await expect(
+      page.getByRole(
+        "status",
+      ),
+    ).toHaveText(
+      "Note saved.",
+    );
+
+    await expect(
+      page.getByLabel(
+        "Add note",
+      ),
+    ).toHaveValue("");
+
+    await expect(
+      page.getByText(
+        note,
+      ),
     ).toBeVisible();
   },
 );

@@ -5,7 +5,7 @@
 
 import {
   loginAsAdmin,
-} from "./test-helpers";
+} from "./authenticated-session";
 
 test(
   "admin can inspect businesses and platform leads",
@@ -32,7 +32,7 @@ test(
 
     await expect(
       page.getByText(
-        "Aurora Digital Studio",
+        "Aadhira SunGrid Energy",
       ).first(),
     ).toBeVisible();
 
@@ -52,7 +52,7 @@ test(
 
     await expect(
       page.getByText(
-        "Aurora Digital Studio",
+        "Aadhira SunGrid Energy",
       ).first(),
     ).toBeVisible();
   },

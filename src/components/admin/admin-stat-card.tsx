@@ -18,13 +18,37 @@ type AdminStatCardProps = {
 
   icon:
     ReactNode;
+
+  accent?:
+    | "blue"
+    | "violet"
+    | "orange"
+    | "amber"
+    | "emerald"
+    | "slate";
 };
+
+const accentClasses = {
+  blue:
+    "bg-blue-500/10 text-blue-600",
+  violet:
+    "bg-violet-500/10 text-violet-600",
+  orange:
+    "bg-orange-500/10 text-orange-600",
+  amber:
+    "bg-amber-500/10 text-amber-700",
+  emerald:
+    "bg-emerald-500/10 text-emerald-600",
+  slate:
+    "bg-slate-500/10 text-slate-600",
+} as const;
 
 export function AdminStatCard({
   label,
   value,
   description,
   icon,
+  accent = "slate",
 }: AdminStatCardProps) {
   return (
     <Card>
@@ -34,7 +58,9 @@ export function AdminStatCard({
             {label}
           </p>
 
-          <div className="flex size-9 items-center justify-center rounded-lg bg-muted">
+          <div
+            className={`flex size-10 items-center justify-center rounded-xl ${accentClasses[accent]}`}
+          >
             {icon}
           </div>
         </div>
